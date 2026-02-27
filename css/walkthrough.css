@@ -1,0 +1,99 @@
+/* ══════════════════════════════════════════════════
+   walkthrough.css — 2×2 card grid with screenshots
+   ══════════════════════════════════════════════════ */
+
+.walkthrough { padding: var(--section-pad) 0; }
+.walkthrough-header { margin-bottom: 56px; }
+
+.walk-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.walk-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  transition: all 0.35s cubic-bezier(0.23,1,0.32,1);
+  position: relative;
+}
+.walk-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0; transition: opacity 0.35s ease;
+}
+.walk-card:hover {
+  border-color: var(--accent-border);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 56px rgba(0,0,0,0.3), 0 0 0 1px var(--accent-border);
+}
+.walk-card:hover::before { opacity: 1; }
+
+/* Screenshot thumbnail */
+.walk-card-img {
+  width: 100%;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.walk-card-img img {
+  width: 100%; height: auto; display: block;
+  transition: transform 0.5s ease;
+}
+.walk-card:hover .walk-card-img img {
+  transform: scale(1.02);
+}
+
+/* Step badge overlay */
+.walk-step-badge {
+  position: absolute; top: 10px; left: 10px;
+  background: rgba(12, 16, 12, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(94,194,122,0.2);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* Card body */
+.walk-card-body {
+  padding: 20px 22px 22px;
+}
+.walk-card-body h3 {
+  font-size: 17px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+.walk-card-body p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+.walk-tags {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.walk-tag {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 3px 9px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(94,194,122,0.08);
+  border-radius: 10px;
+  font-size: 10.5px; color: var(--text-dim); font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .walkthrough { padding: var(--section-pad-mobile) 0; }
+  .walk-grid { grid-template-columns: 1fr; }
+}

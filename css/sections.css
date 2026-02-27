@@ -1,0 +1,110 @@
+/* ══════════════════════════════════════════════════
+   partners.css — Logo row
+   ══════════════════════════════════════════════════ */
+
+.partners { padding: 56px 0 0; }
+.partners-label {
+  text-align: center; font-size: 12px; color: var(--text-dim);
+  font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 32px;
+}
+.logo-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 56px; flex-wrap: wrap; padding: 0 48px;
+}
+.logo-item {
+  height: 120px; opacity: 0.7;
+  transition: all 0.4s ease; object-fit: contain;
+}
+.logo-item:hover { opacity: 1; }
+@media (max-width: 768px) {
+  .logo-row { gap: 32px; padding: 0 24px; }
+  .logo-item { height: 56px; }
+}
+
+
+/* ══════════════════════════════════════════════════
+   features.css — Compact 5-column feature badges
+   ══════════════════════════════════════════════════ */
+
+.features { padding: var(--section-pad) 0; }
+.features-header { margin-bottom: 48px; }
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 20px;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  transition: all 0.35s cubic-bezier(0.23,1,0.32,1);
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0; transition: opacity 0.35s ease;
+}
+.card:hover {
+  border-color: var(--accent-border);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 48px rgba(94,194,122,0.05);
+}
+.card:hover::before { opacity: 1; }
+.card-icon { font-size: 24px; margin-bottom: 12px; }
+.card h3 { font-size: 14.5px; font-weight: 700; margin-bottom: 6px; }
+.card p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.65; }
+
+@media (max-width: 1024px) {
+  .features-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 640px) {
+  .features-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 420px) {
+  .features-grid { grid-template-columns: 1fr; }
+}
+
+
+/* ══════════════════════════════════════════════════
+   benchmarks.css — Performance benchmark cards
+   ══════════════════════════════════════════════════ */
+
+.benchmarks { padding: var(--section-pad) 0; }
+.benchmarks-header { margin-bottom: 48px; }
+.bench-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+}
+.bench-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px; backdrop-filter: blur(12px);
+  transition: all 0.35s ease;
+}
+.bench-card:hover { border-color: var(--accent-border); }
+.bench-config { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.bench-chip-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: var(--accent-dim); border: 1px solid rgba(94,194,122,0.12);
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.bench-config-label h3 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.bench-config-label p { font-size: 12px; color: var(--text-dim); }
+.bench-stats { display: flex; flex-direction: column; gap: 14px; }
+.bench-row { display: flex; justify-content: space-between; align-items: center; }
+.bench-row-label { font-size: 13px; color: var(--text-secondary); }
+.bench-row-value { font-size: 13px; font-weight: 700; color: var(--text); font-family: var(--mono); }
+.bench-row-value.highlight { color: var(--accent); }
+.bench-bar-wrap { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 8px; }
+.bench-bar-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  transition: width 1.2s ease;
+}
+.bench-divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+.bench-note { font-size: 11.5px; color: var(--text-dim); font-style: italic; margin-top: 12px; }
