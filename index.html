@@ -3,228 +3,151 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HabiDATA — Camera-Trap Data Pipeline</title>
-  <meta name="description" content="A unified desktop pipeline for camera-trap data — AI detection, human verification, species tagging, and publication-ready analytics. All offline." />
-  <meta name="keywords" content="camera trap, wildlife, MegaDetector, YOLO, computer vision, ecology, conservation" />
-  
+  <title>HabiDATA — Habitat-centric Data Acquisition, Transform & Analytics</title>
+  <meta name="description" content="HabiDATA is a unified offline desktop application for camera-trap image and video processing — from raw captures to publication-ready analytics." />
+  <meta name="keywords" content="camera trap, wildlife monitoring, MegaDetector, YOLO, computer vision, ecology, conservation, desktop application, species detection" />
+
   <!-- Open Graph -->
-  <meta property="og:title" content="HabiDATA — From Field to Figure" />
-  <meta property="og:description" content="A unified offline desktop pipeline for camera-trap image processing with AI detection, annotation, and analytics." />
+  <meta property="og:title" content="HabiDATA — One-Stop Platform for Camera-Trap Data Processing" />
+  <meta property="og:description" content="A unified offline desktop pipeline for camera-trap image processing with AI detection, human-in-the-loop verification, and publication-ready analytics." />
   <meta property="og:type" content="website" />
 
-  <!-- Fonts -->
+  <!-- Fonts: Nunito Sans (matches the desktop tool) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;0,6..12,800;1,6..12,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
-  <!-- Favicon (paw emoji fallback) -->
+  <!-- Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>" />
 
   <style>
     /* ══════════════════════════════════════════
-       CSS Variables & Reset
+       Variables & Reset
        ══════════════════════════════════════════ */
     :root {
       --accent: #5ec27a;
-      --accent-dim: rgba(94, 194, 122, 0.08);
+      --accent-light: #8ae8a4;
+      --accent-dim: rgba(94, 194, 122, 0.07);
       --accent-border: rgba(94, 194, 122, 0.15);
-      --bg-dark: #0d110d;
-      --bg-card: rgba(30, 36, 30, 0.7);
-      --text-primary: #e8f2e8;
-      --text-muted: #9aab9a;
-      --border: #2a352a;
-      --font-body: 'DM Sans', system-ui, sans-serif;
-      --font-mono: 'Space Mono', 'Courier New', monospace;
+      --bg: #0c100c;
+      --bg-elevated: #131813;
+      --bg-card: rgba(26, 31, 26, 0.75);
+      --text: #e8f2e8;
+      --text-secondary: #a3b8a3;
+      --text-dim: #6d826d;
+      --border: #222e22;
+      --border-light: #2a382a;
+      --font: 'Nunito Sans', system-ui, -apple-system, sans-serif;
+      --mono: 'JetBrains Mono', 'Consolas', monospace;
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html {
-      scroll-behavior: smooth;
-      scrollbar-width: thin;
-      scrollbar-color: var(--accent) var(--bg-dark);
-    }
+    html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--accent) var(--bg); }
 
     body {
-      font-family: var(--font-body);
-      background: var(--bg-dark);
-      color: var(--text-primary);
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
       overflow-x: hidden;
-      line-height: 1.6;
+      line-height: 1.65;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    ::selection {
-      background: var(--accent);
-      color: var(--bg-dark);
-    }
-
+    ::selection { background: var(--accent); color: var(--bg); }
     a { color: inherit; text-decoration: none; }
-    img { max-width: 100%; display: block; }
+    button { font-family: var(--font); }
 
-    .container {
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 0 48px;
-    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 48px; }
+    @media (max-width: 768px) { .container { padding: 0 24px; } }
 
-    @media (max-width: 768px) {
-      .container { padding: 0 24px; }
+    /* ══════════════════════════════════════════
+       Grain Overlay
+       ══════════════════════════════════════════ */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 9999;
+      opacity: 0.018;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
 
     /* ══════════════════════════════════════════
        Animations
        ══════════════════════════════════════════ */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(30px); }
+      from { opacity: 0; transform: translateY(24px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 1; }
-    }
-
+    @keyframes pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
     @keyframes float {
       0%, 100% { transform: translateY(0) translateX(-50%); }
-      50% { transform: translateY(-8px) translateX(-50%); }
+      50% { transform: translateY(-6px) translateX(-50%); }
     }
+    @keyframes countUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
     .fade-up {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
     }
-    .fade-up.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .stagger-1 { transition-delay: 0.05s; }
-    .stagger-2 { transition-delay: 0.1s; }
-    .stagger-3 { transition-delay: 0.15s; }
-    .stagger-4 { transition-delay: 0.2s; }
-
-    /* ══════════════════════════════════════════
-       Film Grain Overlay
-       ══════════════════════════════════════════ */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 9999;
-      opacity: 0.025;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .stagger-1 { transition-delay: 0.06s; }
+    .stagger-2 { transition-delay: 0.12s; }
+    .stagger-3 { transition-delay: 0.18s; }
+    .stagger-4 { transition-delay: 0.24s; }
 
     /* ══════════════════════════════════════════
        Navigation
        ══════════════════════════════════════════ */
     .nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 0 48px;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 48px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
       border-bottom: 1px solid transparent;
-      transition: all 0.4s ease;
+      transition: all 0.35s ease;
     }
     .nav.scrolled {
-      background: rgba(13, 17, 13, 0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: rgba(12, 16, 12, 0.94);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       border-bottom-color: var(--border);
     }
-
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .nav-logo-icon { font-size: 22px; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; }
+    .nav-logo-icon { font-size: 20px; }
     .nav-logo-text {
-      font-family: var(--font-mono);
-      font-weight: 700;
-      font-size: 18px;
-      letter-spacing: 1.5px;
+      font-weight: 800; font-size: 17px; letter-spacing: 1.2px;
     }
     .nav-logo-text span { color: var(--accent); }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-    }
-
+    .nav-links { display: flex; align-items: center; gap: 28px; }
     .nav-link {
-      position: relative;
-      color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.5px;
+      position: relative; color: var(--text-secondary);
+      font-size: 13.5px; font-weight: 600; letter-spacing: 0.3px;
       transition: color 0.3s ease;
     }
     .nav-link:hover { color: var(--accent); }
     .nav-link::after {
-      content: '';
-      position: absolute;
-      bottom: -4px; left: 0;
-      width: 0; height: 1.5px;
-      background: var(--accent);
+      content: ''; position: absolute; bottom: -3px; left: 0;
+      width: 0; height: 1.5px; background: var(--accent);
       transition: width 0.3s ease;
     }
     .nav-link:hover::after { width: 100%; }
-
     .nav-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 20px;
-      background: var(--accent);
-      color: var(--bg-dark);
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 18px; background: var(--accent); color: var(--bg);
+      border-radius: 7px; font-size: 13px; font-weight: 700;
       transition: all 0.3s ease;
     }
-    .nav-cta:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 24px rgba(94, 194, 122, 0.25);
-    }
+    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(94,194,122,0.25); }
 
-    /* Mobile nav */
-    .nav-toggle {
-      display: none;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 8px;
-    }
-    .nav-toggle span {
-      display: block;
-      width: 22px;
-      height: 2px;
-      background: var(--text-primary);
-      margin: 5px 0;
-      transition: 0.3s;
-      border-radius: 2px;
-    }
+    .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+    .nav-toggle span { display: block; width: 20px; height: 2px; background: var(--text); margin: 4px 0; border-radius: 2px; transition: 0.3s; }
 
     @media (max-width: 768px) {
       .nav { padding: 0 24px; }
       .nav-links {
-        display: none;
-        position: absolute;
-        top: 64px; left: 0; right: 0;
-        background: rgba(13, 17, 13, 0.97);
-        backdrop-filter: blur(16px);
-        flex-direction: column;
-        padding: 24px;
-        gap: 20px;
+        display: none; position: absolute; top: 60px; left: 0; right: 0;
+        background: rgba(12,16,12,0.97); backdrop-filter: blur(16px);
+        flex-direction: column; padding: 24px; gap: 18px;
         border-bottom: 1px solid var(--border);
       }
       .nav-links.open { display: flex; }
@@ -235,624 +158,488 @@
        Buttons
        ══════════════════════════════════════════ */
     .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 32px;
-      background: var(--accent);
-      color: var(--bg-dark);
-      border: none;
-      border-radius: 12px;
-      font-family: var(--font-body);
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 13px 30px; background: var(--accent); color: var(--bg);
+      border: none; border-radius: 10px; font-size: 14.5px; font-weight: 700;
+      cursor: pointer; transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
     }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(94, 194, 122, 0.3);
-    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(94,194,122,0.28); }
 
-    .btn-ghost {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 32px;
-      background: transparent;
-      color: var(--text-primary);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-family: var(--font-body);
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s ease;
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 13px 30px; background: transparent; color: var(--text);
+      border: 1.5px solid var(--border-light); border-radius: 10px;
+      font-size: 14.5px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
     }
-    .btn-ghost:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
     /* ══════════════════════════════════════════
-       Hero Section
-       ══════════════════════════════════════════ */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 120px 24px 80px;
-      position: relative;
-    }
-
-    .hero-glow {
-      position: absolute;
-      top: 18%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 600px;
-      height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(94, 194, 122, 0.04) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .hero-content {
-      position: relative;
-      animation: fadeUp 1s ease forwards;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 16px;
-      margin-bottom: 32px;
-      background: var(--accent-dim);
-      border: 1px solid rgba(94, 194, 122, 0.12);
-      border-radius: 20px;
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .hero-badge-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: pulse 2s infinite;
-    }
-
-    .hero h1 {
-      font-size: clamp(48px, 7vw, 84px);
-      font-weight: 700;
-      line-height: 1.05;
-      letter-spacing: -2px;
-      margin-bottom: 24px;
-    }
-
-    .hero-gradient {
-      background: linear-gradient(135deg, var(--accent), #8ae8a4);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero p {
-      font-size: 18px;
-      color: var(--text-muted);
-      max-width: 540px;
-      margin: 0 auto 40px;
-      line-height: 1.7;
-      font-weight: 400;
-    }
-
-    .hero-buttons {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .scroll-indicator {
-      position: absolute;
-      bottom: 40px;
-      left: 50%;
-      animation: float 3s ease-in-out infinite;
-      opacity: 0.4;
-    }
-
-    /* ══════════════════════════════════════════
-       Section Headers
+       Section Shared
        ══════════════════════════════════════════ */
     .section-label {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--accent);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      display: block;
-      margin-bottom: 12px;
+      font-family: var(--mono); font-size: 11.5px; color: var(--accent);
+      letter-spacing: 2.5px; text-transform: uppercase; font-weight: 600;
+      display: block; margin-bottom: 14px;
     }
-
     .section-title {
-      font-size: clamp(32px, 4vw, 42px);
-      font-weight: 700;
-      letter-spacing: -1px;
-      line-height: 1.15;
+      font-size: clamp(30px, 3.5vw, 40px); font-weight: 800;
+      letter-spacing: -0.8px; line-height: 1.18;
     }
-    .section-title .muted {
-      color: var(--text-muted);
-      font-weight: 400;
-    }
+    .section-title .muted { color: var(--text-secondary); font-weight: 400; }
 
     /* ══════════════════════════════════════════
-       Features Section
+       Hero
        ══════════════════════════════════════════ */
-    .features {
-      padding: 120px 0;
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; text-align: center;
+      padding: 100px 24px 60px; position: relative;
     }
-
-    .features-header {
-      margin-bottom: 64px;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px 28px;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-      position: relative;
-      overflow: hidden;
-    }
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-    .card:hover {
-      border-color: rgba(94, 194, 122, 0.25);
-      transform: translateY(-4px);
-      box-shadow: 0 20px 60px rgba(94, 194, 122, 0.06);
-    }
-    .card:hover::before { opacity: 1; }
-
-    .card-icon {
-      font-size: 28px;
-      margin-bottom: 16px;
-    }
-
-    .card h3 {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    .card p {
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.7;
-    }
-
-    /* ══════════════════════════════════════════
-       Workflow Section
-       ══════════════════════════════════════════ */
-    .workflow {
-      padding: 120px 0;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .workflow-header {
-      margin-bottom: 48px;
-    }
-
-    .workflow-step {
-      display: flex;
-      align-items: flex-start;
-      gap: 24px;
-      padding: 28px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .workflow-step:last-child { border-bottom: none; }
-
-    .step-number {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--accent);
-      min-width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1.5px solid rgba(94, 194, 122, 0.25);
-      border-radius: 8px;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    .step-content h3 {
-      font-size: 17px;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .step-content p {
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.7;
-    }
-
-    /* ══════════════════════════════════════════
-       Tech Stack Section
-       ══════════════════════════════════════════ */
-    .tech {
-      padding: 120px 0;
-    }
-
-    .tech-header {
-      margin-bottom: 48px;
-    }
-
-    .tech-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 56px;
-    }
-
-    .tech-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      background: var(--accent-dim);
-      border: 1px solid rgba(94, 194, 122, 0.12);
-      border-radius: 20px;
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-    .tech-badge:hover {
-      background: var(--accent-border);
-      color: var(--accent);
-      border-color: rgba(94, 194, 122, 0.3);
-    }
-
-    .design-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .design-item {
-      padding: 24px 0;
-      border-top: 1px solid var(--border);
-    }
-
-    .design-item h3 {
-      font-family: var(--font-mono);
-      font-size: 14px;
-      color: var(--accent);
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .design-item p {
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.7;
-    }
-
-    /* ══════════════════════════════════════════
-       Models Table Section
-       ══════════════════════════════════════════ */
-    .models {
-      padding: 0 0 120px;
-    }
-
-    .models-header {
-      margin-bottom: 40px;
-    }
-
-    .models-table-wrap {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .models-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-
-    .models-table thead {
-      background: rgba(30, 36, 30, 0.8);
-    }
-
-    .models-table th {
-      text-align: left;
-      padding: 14px 20px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--accent);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-weight: 700;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .models-table td {
-      padding: 14px 20px;
-      color: var(--text-muted);
-      border-bottom: 1px solid rgba(42, 53, 42, 0.4);
-    }
-
-    .models-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .models-table tbody tr {
-      transition: background 0.2s ease;
-    }
-
-    .models-table tbody tr:hover {
-      background: rgba(94, 194, 122, 0.03);
-    }
-
-    .model-name {
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-
-    .model-tag {
-      display: inline-block;
-      padding: 2px 8px;
-      background: var(--accent-dim);
-      border-radius: 4px;
-      font-size: 11px;
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    @media (max-width: 768px) {
-      .models-table-wrap { overflow-x: auto; }
-      .models-table { min-width: 560px; }
-    }
-
-    /* ══════════════════════════════════════════
-       Citation Section
-       ══════════════════════════════════════════ */
-    .citation {
-      padding: 120px 0;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .citation-header {
-      margin-bottom: 32px;
-    }
-
-    .citation-header p {
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.7;
-      margin-top: 16px;
-    }
-
-    .bibtex-block {
-      position: relative;
-      background: rgba(20, 26, 20, 0.9);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 28px;
-      overflow: hidden;
-    }
-
-    .bibtex-block pre {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      line-height: 1.7;
-      color: var(--text-muted);
-      white-space: pre-wrap;
-      margin: 0;
-    }
-
-    .copy-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: var(--accent-dim);
-      border: 1px solid rgba(94, 194, 122, 0.2);
-      border-radius: 8px;
-      padding: 6px 14px;
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: var(--font-body);
-      transition: all 0.3s ease;
-    }
-    .copy-btn:hover {
-      background: var(--accent-border);
-      color: var(--accent);
-    }
-    .copy-btn.copied {
-      background: var(--accent);
-      color: var(--bg-dark);
-      border-color: var(--accent);
-    }
-
-    .references {
-      margin-top: 40px;
-      padding-top: 32px;
-      border-top: 1px solid var(--border);
-    }
-
-    .references h3 {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 16px;
-    }
-
-    .references ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .references li {
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.7;
-      padding: 6px 0;
-      padding-left: 16px;
-      position: relative;
-    }
-    .references li::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 14px;
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: var(--accent);
-      opacity: 0.5;
-    }
-
-    /* ══════════════════════════════════════════
-       Download / CTA Section
-       ══════════════════════════════════════════ */
-    .download {
-      padding: 120px 0 80px;
-      max-width: 800px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .download-card {
-      padding: 64px 48px;
-      background: linear-gradient(135deg, rgba(94, 194, 122, 0.06) 0%, rgba(30, 36, 30, 0.5) 100%);
-      border: 1px solid rgba(94, 194, 122, 0.12);
-      border-radius: 24px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .download-card-glow {
-      position: absolute;
-      top: -80px; right: -80px;
-      width: 200px; height: 200px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(94, 194, 122, 0.04) 0%, transparent 70%);
+    .hero-glow {
+      position: absolute; top: 15%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 650px; height: 650px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(94,194,122,0.035) 0%, transparent 65%);
       pointer-events: none;
     }
+    .hero-content { position: relative; animation: fadeUp 0.9s ease forwards; max-width: 720px; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 5px 14px; margin-bottom: 28px;
+      background: var(--accent-dim); border: 1px solid rgba(94,194,122,0.1);
+      border-radius: 18px; font-size: 12.5px; color: var(--text-secondary); font-weight: 600;
+    }
+    .hero-badge-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
 
-    .download-card h2 {
-      font-size: 36px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      letter-spacing: -1px;
-      position: relative;
+    .hero h1 {
+      font-size: clamp(40px, 6vw, 68px); font-weight: 800;
+      line-height: 1.08; letter-spacing: -1.5px; margin-bottom: 10px;
+    }
+    .hero-gradient {
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-subtitle {
+      font-size: clamp(15px, 2vw, 18px); color: var(--text-secondary);
+      max-width: 580px; margin: 0 auto 14px; line-height: 1.65; font-weight: 400;
+    }
+    .hero-full-form {
+      font-family: var(--mono); font-size: 13px; color: var(--text-dim);
+      margin-bottom: 36px; letter-spacing: 0.5px;
+    }
+    .hero-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .scroll-indicator {
+      position: absolute; bottom: 32px; left: 50%;
+      animation: float 3s ease-in-out infinite; opacity: 0.35;
     }
 
-    .download-card p {
-      font-size: 15px;
-      color: var(--text-muted);
-      margin-bottom: 36px;
-      line-height: 1.7;
+    /* ══════════════════════════════════════════
+       App Preview / Screenshot Section
+       ══════════════════════════════════════════ */
+    .app-preview {
+      padding: 40px 0 100px;
+    }
+    .preview-window {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(94,194,122,0.05);
+    }
+    .preview-titlebar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 14px 18px;
+      background: rgba(20, 26, 20, 0.8);
+      border-bottom: 1px solid var(--border);
+    }
+    .preview-dot { width: 11px; height: 11px; border-radius: 50%; }
+    .preview-dot.red { background: #ff5f57; }
+    .preview-dot.yellow { background: #febc2e; }
+    .preview-dot.green { background: #28c840; }
+    .preview-title {
+      flex: 1; text-align: center;
+      font-size: 12px; color: var(--text-dim); font-weight: 600;
+    }
+    .preview-tabs {
+      display: flex; border-bottom: 1px solid var(--border);
+    }
+    .preview-tab {
+      padding: 10px 20px; font-size: 12.5px; font-weight: 600;
+      color: var(--text-dim); cursor: pointer; position: relative;
+      transition: color 0.3s ease; border: none; background: none;
+    }
+    .preview-tab.active { color: var(--accent); }
+    .preview-tab.active::after {
+      content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+      height: 2px; background: var(--accent);
+    }
+    .preview-tab:hover { color: var(--text-secondary); }
+    .preview-body {
+      min-height: 380px; padding: 32px;
+      display: flex; align-items: center; justify-content: center;
       position: relative;
+    }
+    .preview-placeholder {
+      text-align: center; max-width: 460px;
+    }
+    .preview-placeholder-icon { font-size: 48px; margin-bottom: 16px; }
+    .preview-placeholder h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .preview-placeholder p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.7; }
+
+    .preview-content { display: none; width: 100%; }
+    .preview-content.active { display: block; }
+
+    /* Simulated UI inside preview */
+    .sim-grid {
+      display: grid; grid-template-columns: 200px 1fr; gap: 20px;
+      min-height: 300px;
+    }
+    .sim-sidebar {
+      background: rgba(20,26,20,0.6); border-radius: 10px; padding: 16px;
+      border: 1px solid var(--border);
+    }
+    .sim-sidebar-item {
+      padding: 8px 12px; border-radius: 6px; font-size: 12.5px;
+      color: var(--text-dim); margin-bottom: 4px; cursor: default;
+      transition: all 0.2s;
+    }
+    .sim-sidebar-item.active {
+      background: var(--accent-dim); color: var(--accent);
+      border: 1px solid rgba(94,194,122,0.15);
+    }
+    .sim-main { display: flex; flex-direction: column; gap: 16px; }
+    .sim-stat-row { display: flex; gap: 12px; }
+    .sim-stat {
+      flex: 1; background: rgba(20,26,20,0.6); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px;
+    }
+    .sim-stat-label { font-size: 11px; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .sim-stat-value { font-size: 24px; font-weight: 800; color: var(--accent); }
+    .sim-stat-value.white { color: var(--text); }
+
+    .sim-progress-area {
+      background: rgba(20,26,20,0.6); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px; flex: 1;
+    }
+    .sim-progress-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; font-weight: 600; }
+    .sim-progress-bar {
+      height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;
+    }
+    .sim-progress-fill {
+      height: 100%; width: 73%; background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      border-radius: 4px; transition: width 1.5s ease;
+    }
+    .sim-progress-info { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--text-dim); }
+
+    .sim-image-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .sim-thumb {
+      aspect-ratio: 4/3; background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: 8px; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; font-size: 24px; position: relative; overflow: hidden;
+    }
+    .sim-thumb-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 4px 8px; background: rgba(12,16,12,0.85);
+      font-size: 10px; color: var(--accent); font-weight: 600;
+      text-align: center;
+    }
+    .sim-bbox {
+      position: absolute; border: 1.5px solid var(--accent);
+      border-radius: 3px; top: 15%; left: 20%; width: 55%; height: 55%;
     }
 
-    .download-buttons {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-      position: relative;
+    .sim-chart-area {
+      background: rgba(20,26,20,0.6); border: 1px solid var(--border);
+      border-radius: 10px; padding: 20px; flex: 1;
     }
+    .sim-chart-title { font-size: 13px; font-weight: 700; margin-bottom: 16px; }
+    .sim-bars { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
+    .sim-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .sim-bar {
+      width: 100%; background: linear-gradient(to top, var(--accent), var(--accent-light));
+      border-radius: 4px 4px 0 0; min-height: 4px; opacity: 0.7;
+      transition: opacity 0.3s;
+    }
+    .sim-bar:hover { opacity: 1; }
+    .sim-bar-label { font-size: 9px; color: var(--text-dim); }
+
+    @media (max-width: 768px) {
+      .sim-grid { grid-template-columns: 1fr; }
+      .sim-sidebar { display: none; }
+      .sim-image-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ══════════════════════════════════════════
+       Features
+       ══════════════════════════════════════════ */
+    .features { padding: 100px 0; }
+    .features-header { margin-bottom: 56px; }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px;
+    }
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 28px 24px;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      transition: all 0.35s cubic-bezier(0.23,1,0.32,1);
+      position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0; transition: opacity 0.35s ease;
+    }
+    .card:hover { border-color: var(--accent-border); transform: translateY(-3px); box-shadow: 0 16px 48px rgba(94,194,122,0.05); }
+    .card:hover::before { opacity: 1; }
+    .card-icon { font-size: 26px; margin-bottom: 14px; }
+    .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .card p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.7; }
+
+    /* ══════════════════════════════════════════
+       Performance Benchmarks
+       ══════════════════════════════════════════ */
+    .benchmarks { padding: 100px 0; }
+    .benchmarks-header { margin-bottom: 48px; }
+    .bench-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px;
+    }
+    .bench-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 28px; backdrop-filter: blur(12px);
+      transition: all 0.35s ease; position: relative;
+    }
+    .bench-card:hover { border-color: var(--accent-border); }
+    .bench-config {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+    }
+    .bench-chip-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--accent-dim); border: 1px solid rgba(94,194,122,0.12);
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .bench-config-label h3 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+    .bench-config-label p { font-size: 12px; color: var(--text-dim); }
+    .bench-stats { display: flex; flex-direction: column; gap: 14px; }
+    .bench-row {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .bench-row-label { font-size: 13px; color: var(--text-secondary); }
+    .bench-row-value { font-size: 13px; font-weight: 700; color: var(--text); font-family: var(--mono); }
+    .bench-row-value.highlight { color: var(--accent); }
+    .bench-bar-wrap {
+      height: 6px; background: var(--border); border-radius: 3px;
+      overflow: hidden; margin-top: 8px;
+    }
+    .bench-bar-fill {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      transition: width 1.2s ease;
+    }
+    .bench-divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+    .bench-note {
+      font-size: 11.5px; color: var(--text-dim); font-style: italic; margin-top: 12px;
+    }
+
+    /* ══════════════════════════════════════════
+       Workflow
+       ══════════════════════════════════════════ */
+    .workflow { padding: 100px 0; }
+    .workflow-header { margin-bottom: 48px; }
+    .workflow-steps { max-width: 680px; }
+    .workflow-step {
+      display: flex; align-items: flex-start; gap: 22px;
+      padding: 24px 0; border-bottom: 1px solid var(--border);
+    }
+    .workflow-step:last-child { border-bottom: none; }
+    .step-number {
+      font-family: var(--mono); font-size: 12px; color: var(--accent);
+      min-width: 30px; height: 30px; display: flex; align-items: center;
+      justify-content: center; border: 1.5px solid rgba(94,194,122,0.25);
+      border-radius: 7px; flex-shrink: 0; margin-top: 1px; font-weight: 600;
+    }
+    .step-content h3 { font-size: 16px; font-weight: 700; margin-bottom: 5px; }
+    .step-content p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.7; }
+
+    /* ══════════════════════════════════════════
+       Tech Stack
+       ══════════════════════════════════════════ */
+    .tech { padding: 100px 0; }
+    .tech-header { margin-bottom: 40px; }
+    .tech-badges { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 48px; }
+    .tech-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 13px; background: var(--accent-dim);
+      border: 1px solid rgba(94,194,122,0.1); border-radius: 18px;
+      font-size: 12.5px; color: var(--text-secondary); font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .tech-badge:hover { background: var(--accent-border); color: var(--accent); border-color: rgba(94,194,122,0.3); }
+
+    .design-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+    .design-item { padding: 20px 0; border-top: 1px solid var(--border); }
+    .design-item h3 { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
+    .design-item p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.7; }
+
+    /* ══════════════════════════════════════════
+       Models Table
+       ══════════════════════════════════════════ */
+    .models { padding: 0 0 100px; }
+    .models-header { margin-bottom: 36px; }
+    .models-table-wrap { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .models-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    .models-table thead { background: rgba(26,31,26,0.8); }
+    .models-table th {
+      text-align: left; padding: 12px 18px; font-family: var(--mono);
+      font-size: 11px; color: var(--accent); letter-spacing: 1.2px;
+      text-transform: uppercase; font-weight: 600; border-bottom: 1px solid var(--border);
+    }
+    .models-table td { padding: 12px 18px; color: var(--text-secondary); border-bottom: 1px solid rgba(34,46,34,0.4); }
+    .models-table tr:last-child td { border-bottom: none; }
+    .models-table tbody tr { transition: background 0.2s; }
+    .models-table tbody tr:hover { background: rgba(94,194,122,0.025); }
+    .model-name { color: var(--text); font-weight: 700; }
+    .model-tag {
+      display: inline-block; padding: 2px 7px; background: var(--accent-dim);
+      border-radius: 4px; font-size: 10px; color: var(--accent); font-weight: 700; margin-left: 6px;
+    }
+    @media (max-width: 768px) {
+      .models-table-wrap { overflow-x: auto; }
+      .models-table { min-width: 540px; }
+    }
+
+    /* ══════════════════════════════════════════
+       Citation
+       ══════════════════════════════════════════ */
+    .citation { padding: 100px 0; }
+    .citation-header { margin-bottom: 28px; }
+    .citation-header p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin-top: 14px; }
+    .bibtex-block {
+      position: relative; background: rgba(16,20,16,0.9);
+      border: 1px solid var(--border); border-radius: 11px;
+      padding: 22px 24px; overflow: hidden;
+    }
+    .bibtex-block pre {
+      font-family: var(--mono); font-size: 12.5px; line-height: 1.7;
+      color: var(--text-secondary); white-space: pre-wrap; margin: 0;
+    }
+    .copy-btn {
+      position: absolute; top: 10px; right: 10px;
+      background: var(--accent-dim); border: 1px solid rgba(94,194,122,0.18);
+      border-radius: 7px; padding: 5px 12px; color: var(--text-secondary);
+      font-size: 11.5px; font-weight: 700; cursor: pointer; font-family: var(--font);
+      transition: all 0.3s ease;
+    }
+    .copy-btn:hover { background: var(--accent-border); color: var(--accent); }
+    .copy-btn.copied { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+    .references { margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .references h3 { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+    .references ul { list-style: none; padding: 0; }
+    .references li {
+      font-size: 12.5px; color: var(--text-secondary); line-height: 1.7;
+      padding: 5px 0 5px 14px; position: relative;
+    }
+    .references li::before {
+      content: ''; position: absolute; left: 0; top: 12px;
+      width: 4px; height: 4px; border-radius: 50%; background: var(--accent); opacity: 0.45;
+    }
+
+    /* ══════════════════════════════════════════
+       Download + Survey
+       ══════════════════════════════════════════ */
+    .download { padding: 100px 0 60px; }
+    .download-card {
+      padding: 56px 48px; text-align: center;
+      background: linear-gradient(135deg, rgba(94,194,122,0.05) 0%, rgba(26,31,26,0.5) 100%);
+      border: 1px solid rgba(94,194,122,0.1); border-radius: 20px;
+      position: relative; overflow: hidden;
+    }
+    .download-card h2 { font-size: clamp(26px, 3.5vw, 34px); font-weight: 800; margin-bottom: 14px; letter-spacing: -0.8px; position: relative; }
+    .download-card p { font-size: 14.5px; color: var(--text-secondary); margin-bottom: 32px; line-height: 1.7; position: relative; }
+    .download-note {
+      font-size: 12px; color: var(--text-dim); margin-top: 20px;
+      position: relative; font-style: italic;
+    }
+
+    /* Survey Form */
+    .survey { padding: 60px 0 100px; }
+    .survey-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 40px; backdrop-filter: blur(12px);
+      max-width: 640px; margin: 0 auto;
+    }
+    .survey-card h2 { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+    .survey-card .survey-subtitle { font-size: 14px; color: var(--text-secondary); margin-bottom: 28px; line-height: 1.6; }
+    .form-group { margin-bottom: 20px; }
+    .form-label {
+      display: block; font-size: 13px; font-weight: 700;
+      color: var(--text); margin-bottom: 6px;
+    }
+    .form-label .required { color: var(--accent); }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; padding: 10px 14px;
+      background: rgba(16,20,16,0.8); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-family: var(--font);
+      font-size: 14px; transition: border-color 0.3s ease;
+      outline: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--text-dim); }
+    .form-select { cursor: pointer; -webkit-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236d826d' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+    }
+    .form-select option { background: var(--bg); color: var(--text); }
+    .form-textarea { resize: vertical; min-height: 80px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+    .form-submit {
+      width: 100%; padding: 13px; background: var(--accent); color: var(--bg);
+      border: none; border-radius: 10px; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: var(--font); transition: all 0.3s ease;
+      margin-top: 8px;
+    }
+    .form-submit:hover { box-shadow: 0 8px 28px rgba(94,194,122,0.3); transform: translateY(-1px); }
+    .form-success {
+      display: none; text-align: center; padding: 32px;
+    }
+    .form-success.show { display: block; }
+    .form-success-icon { font-size: 48px; margin-bottom: 16px; }
+    .form-success h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .form-success p { font-size: 14px; color: var(--text-secondary); }
 
     /* ══════════════════════════════════════════
        Footer
        ══════════════════════════════════════════ */
     .footer {
-      padding: 40px 48px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
+      padding: 36px 48px; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 14px;
     }
-
-    .footer-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .footer-text {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 24px;
-    }
-
-    .footer-links a {
-      font-size: 13px;
-      color: var(--text-muted);
-      transition: color 0.3s ease;
-    }
+    .footer-left { display: flex; align-items: center; gap: 10px; }
+    .footer-text { font-size: 12.5px; color: var(--text-dim); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font-size: 12.5px; color: var(--text-dim); transition: color 0.3s; }
     .footer-links a:hover { color: var(--accent); }
-
     @media (max-width: 768px) {
-      .footer {
-        padding: 32px 24px;
-        flex-direction: column;
-        text-align: center;
-      }
+      .footer { padding: 28px 24px; flex-direction: column; text-align: center; }
     }
 
     /* ══════════════════════════════════════════
        Responsive
        ══════════════════════════════════════════ */
     @media (max-width: 768px) {
-      .hero h1 { letter-spacing: -1px; }
-      .hero p { font-size: 16px; }
-      .features, .tech, .models { padding: 80px 0; }
-      .workflow, .citation, .download { padding: 80px 0; }
-      .download-card { padding: 40px 24px; }
-      .download-card h2 { font-size: 28px; }
+      .features, .tech, .models, .benchmarks { padding: 70px 0; }
+      .workflow, .citation, .download, .survey { padding: 70px 0; }
+      .download-card { padding: 36px 24px; }
+      .survey-card { padding: 28px 20px; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ═══════════════ Navigation ═══════════════ -->
+  <!-- ═══════════ Navigation ═══════════ -->
   <nav class="nav" id="nav">
     <a href="#hero" class="nav-logo">
       <span class="nav-logo-icon">🐾</span>
@@ -863,117 +650,300 @@
     </button>
     <div class="nav-links" id="navLinks">
       <a href="#features" class="nav-link">Features</a>
+      <a href="#benchmarks" class="nav-link">Performance</a>
       <a href="#workflow" class="nav-link">Workflow</a>
-      <a href="#tech" class="nav-link">Tech</a>
-      <a href="#models" class="nav-link">Models</a>
+      <a href="#tech" class="nav-link">Architecture</a>
       <a href="#citation" class="nav-link">Cite</a>
       <a href="#download" class="nav-cta">Download</a>
     </div>
   </nav>
 
-  <!-- ═══════════════ Hero ═══════════════ -->
+  <!-- ═══════════ Hero ═══════════ -->
   <section class="hero" id="hero">
     <div class="hero-glow"></div>
     <div class="hero-content">
       <div class="hero-badge">
         <span class="hero-badge-dot"></span>
-        Open Source &middot; Offline-First &middot; Desktop Native
+        Offline &middot; Desktop-Native &middot; Cross-Platform
       </div>
-      <h1>From Field<br /><span class="hero-gradient">to Figure.</span></h1>
-      <p>A unified desktop pipeline for camera-trap data — AI detection, human verification, species tagging, and publication-ready analytics. All offline.</p>
+      <h1>Habi<span class="hero-gradient">DATA</span></h1>
+      <p class="hero-subtitle">
+        A unified desktop platform for camera-trap image and video processing — from raw captures to publication-ready analytics.
+      </p>
+      <p class="hero-full-form">
+        <strong>Habi</strong>tat-centric <strong>D</strong>ata <strong>A</strong>cquisition, <strong>T</strong>ransform & <strong>A</strong>nalytics
+      </p>
       <div class="hero-buttons">
         <a href="#download" class="btn-primary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Download v1.0
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download
         </a>
-        <a href="#features" class="btn-ghost">Learn More ↓</a>
+        <a href="#features" class="btn-secondary">Explore Features</a>
       </div>
     </div>
     <div class="scroll-indicator">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9aab9a" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6d826d" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
     </div>
   </section>
 
-  <!-- ═══════════════ Features ═══════════════ -->
+  <!-- ═══════════ App Preview ═══════════ -->
+  <section class="app-preview" id="app-preview">
+    <div class="container">
+      <div class="preview-window fade-up">
+        <div class="preview-titlebar">
+          <span class="preview-dot red"></span>
+          <span class="preview-dot yellow"></span>
+          <span class="preview-dot green"></span>
+          <span class="preview-title">HabiDATA v1.0</span>
+          <div style="width: 48px;"></div>
+        </div>
+        <div class="preview-tabs">
+          <button class="preview-tab active" data-tab="home">Home</button>
+          <button class="preview-tab" data-tab="detect">Run Detection</button>
+          <button class="preview-tab" data-tab="edit">Edit & Tag</button>
+          <button class="preview-tab" data-tab="analysis">Analysis</button>
+        </div>
+
+        <!-- Home Tab -->
+        <div class="preview-body">
+          <div class="preview-content active" id="tab-home">
+            <div class="sim-grid">
+              <div class="sim-sidebar">
+                <div class="sim-sidebar-item active">📁 RJ01_Sariska</div>
+                <div class="sim-sidebar-item">📁 KA03_BRT</div>
+                <div class="sim-sidebar-item">📁 MP07_Panna</div>
+                <div class="sim-sidebar-item" style="margin-top:16px; font-size:11px; color:var(--text-dim);">3 projects loaded</div>
+              </div>
+              <div class="sim-main">
+                <div class="sim-stat-row">
+                  <div class="sim-stat"><div class="sim-stat-label">Total Images</div><div class="sim-stat-value white">12,847</div></div>
+                  <div class="sim-stat"><div class="sim-stat-label">Detected</div><div class="sim-stat-value">9,214</div></div>
+                  <div class="sim-stat"><div class="sim-stat-label">Verified</div><div class="sim-stat-value" style="color: #febc2e;">6,102</div></div>
+                </div>
+                <div class="sim-progress-area">
+                  <div class="sim-progress-label">Project Completion</div>
+                  <div class="sim-progress-bar"><div class="sim-progress-fill"></div></div>
+                  <div class="sim-progress-info"><span>73% annotated</span><span>6,102 / 8,337 verified</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-content" id="tab-detect">
+            <div style="width:100%;">
+              <div class="sim-stat-row" style="margin-bottom:16px;">
+                <div class="sim-stat"><div class="sim-stat-label">Model</div><div class="sim-stat-value white" style="font-size:16px;">MDv6-YOLOv10n</div></div>
+                <div class="sim-stat"><div class="sim-stat-label">Confidence</div><div class="sim-stat-value" style="font-size:16px;">0.45</div></div>
+                <div class="sim-stat"><div class="sim-stat-label">Device</div><div class="sim-stat-value white" style="font-size:16px;">CUDA:0</div></div>
+              </div>
+              <div class="sim-progress-area">
+                <div class="sim-progress-label">Processing 12,847 images...</div>
+                <div class="sim-progress-bar"><div class="sim-progress-fill" style="width:47%;"></div></div>
+                <div class="sim-progress-info"><span>6,038 / 12,847</span><span>~4 min remaining</span></div>
+              </div>
+              <div class="sim-stat-row" style="margin-top:16px;">
+                <div class="sim-stat"><div class="sim-stat-label">Animals</div><div class="sim-stat-value">3,412</div></div>
+                <div class="sim-stat"><div class="sim-stat-label">Humans</div><div class="sim-stat-value" style="color:#febc2e;">847</div></div>
+                <div class="sim-stat"><div class="sim-stat-label">Vehicles</div><div class="sim-stat-value" style="color:#64b5f6;">124</div></div>
+                <div class="sim-stat"><div class="sim-stat-label">Blank</div><div class="sim-stat-value white">1,655</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-content" id="tab-edit">
+            <div style="width:100%;">
+              <div class="sim-image-grid">
+                <div class="sim-thumb">🦌<div class="sim-bbox"></div><div class="sim-thumb-label">animal · 0.94</div></div>
+                <div class="sim-thumb">🐆<div class="sim-bbox" style="top:10%;left:25%;width:50%;height:60%;"></div><div class="sim-thumb-label">animal · 0.97</div></div>
+                <div class="sim-thumb">🧑<div class="sim-bbox" style="top:5%;left:30%;width:40%;height:70%;"></div><div class="sim-thumb-label">human · 0.88</div></div>
+                <div class="sim-thumb">🌿<div class="sim-thumb-label" style="color:var(--text-dim);">blank · 0.12</div></div>
+                <div class="sim-thumb">🐗<div class="sim-bbox" style="top:20%;left:15%;width:65%;height:50%;"></div><div class="sim-thumb-label">animal · 0.91</div></div>
+                <div class="sim-thumb">🦚<div class="sim-bbox" style="top:25%;left:20%;width:55%;height:45%;"></div><div class="sim-thumb-label">animal · 0.86</div></div>
+                <div class="sim-thumb">🚙<div class="sim-bbox" style="top:30%;left:10%;width:75%;height:40%;"></div><div class="sim-thumb-label">vehicle · 0.92</div></div>
+                <div class="sim-thumb">🐒<div class="sim-bbox" style="top:15%;left:25%;width:45%;height:55%;"></div><div class="sim-thumb-label">animal · 0.89</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-content" id="tab-analysis">
+            <div style="width:100%; display:flex; gap:16px; flex-wrap:wrap;">
+              <div class="sim-chart-area" style="flex:1; min-width:240px;">
+                <div class="sim-chart-title">Daily Captures</div>
+                <div class="sim-bars">
+                  <div class="sim-bar-col"><div class="sim-bar" style="height:45%;"></div><div class="sim-bar-label">Mon</div></div>
+                  <div class="sim-bar-col"><div class="sim-bar" style="height:72%;"></div><div class="sim-bar-label">Tue</div></div>
+                  <div class="sim-bar-col"><div class="sim-bar" style="height:58%;"></div><div class="sim-bar-label">Wed</div></div>
+                  <div class="sim-bar-col"><div class="sim-bar" style="height:90%;"></div><div class="sim-bar-label">Thu</div></div>
+                  <div class="sim-bar-col"><div class="sim-bar" style="height:65%;"></div><div class="sim-bar-label">Fri</div></div>
+                  <div class="sim-bar-col"><div class="sim-bar" style="height:82%;"></div><div class="sim-bar-label">Sat</div></div>
+                  <div class="sim-bar-col"><div class="sim-bar" style="height:40%;"></div><div class="sim-bar-label">Sun</div></div>
+                </div>
+              </div>
+              <div class="sim-chart-area" style="flex:1; min-width:240px;">
+                <div class="sim-chart-title">Category Distribution</div>
+                <div style="display:flex; flex-direction:column; gap:12px; margin-top:8px;">
+                  <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text-secondary)">Animal</span><span style="color:var(--accent);font-weight:700;">56.4%</span></div><div class="bench-bar-wrap"><div class="bench-bar-fill" style="width:56.4%;"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text-secondary)">Blank</span><span style="font-weight:700;">27.3%</span></div><div class="bench-bar-wrap"><div class="bench-bar-fill" style="width:27.3%;background:var(--text-dim);"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text-secondary)">Human</span><span style="color:#febc2e;font-weight:700;">14.0%</span></div><div class="bench-bar-wrap"><div class="bench-bar-fill" style="width:14%;background:#febc2e;"></div></div></div>
+                  <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text-secondary)">Vehicle</span><span style="color:#64b5f6;font-weight:700;">2.3%</span></div><div class="bench-bar-wrap"><div class="bench-bar-fill" style="width:2.3%;background:#64b5f6;"></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ Features ═══════════ -->
   <section class="features" id="features">
     <div class="container">
       <div class="features-header fade-up">
         <span class="section-label">Capabilities</span>
-        <h2 class="section-title">Everything you need.<br /><span class="muted">Nothing you don't.</span></h2>
+        <h2 class="section-title">Comprehensive camera-trap processing.<br /><span class="muted">In a single application.</span></h2>
       </div>
-
       <div class="features-grid">
         <div class="card fade-up stagger-1">
           <div class="card-icon">🔍</div>
-          <h3>Run Detection</h3>
-          <p>One-click AI inference with MegaDetector v6 (YOLOv10). Custom weights, GPU acceleration, and automatic batch-size tuning.</p>
+          <h3>AI-Powered Detection</h3>
+          <p>One-click inference with MegaDetector v6 (YOLOv10-nano). Supports custom YOLO weights, configurable confidence thresholds, and GPU acceleration with automatic batch-size tuning.</p>
         </div>
         <div class="card fade-up stagger-2">
           <div class="card-icon">✏️</div>
-          <h3>Edit & Tag</h3>
-          <p>Review detections, adjust bounding boxes, assign species from loadable lists, and batch-verify hundreds of images in seconds.</p>
+          <h3>Human-in-the-Loop Verification</h3>
+          <p>Review every detection, adjust bounding boxes, relabel categories, assign species from loadable taxonomic lists, and batch-verify hundreds of images efficiently.</p>
         </div>
         <div class="card fade-up stagger-3">
           <div class="card-icon">📊</div>
-          <h3>Visual Analytics</h3>
-          <p>Daily capture timelines, activity histograms, camera-gap detection, and deployment sheets — all exportable as PNG for publications.</p>
+          <h3>Publication-Ready Analytics</h3>
+          <p>Daily capture timelines, hour-of-day activity histograms, camera-gap detection, clock-jump anomaly alerts, and deployment-sheet export — all as publication-grade PNGs.</p>
         </div>
         <div class="card fade-up stagger-4">
           <div class="card-icon">📂</div>
           <h3>Smart Segregation</h3>
-          <p>Auto-sort images into category or species sub-folders. Supports copy/move modes and mass annotation from folder structures.</p>
+          <p>Automatically sort images into category or species sub-folders. Supports copy and move modes, livestock sub-splitting, and mass annotation from pre-tagged folder structures.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════ Workflow ═══════════════ -->
+  <!-- ═══════════ Performance Benchmarks ═══════════ -->
+  <section class="benchmarks" id="benchmarks">
+    <div class="container">
+      <div class="benchmarks-header fade-up">
+        <span class="section-label">Performance</span>
+        <h2 class="section-title">Tested across hardware configurations.<br /><span class="muted">Built for real-world throughput.</span></h2>
+      </div>
+      <div class="bench-grid">
+
+        <!-- Config 1: i5 CPU -->
+        <div class="bench-card fade-up stagger-1">
+          <div class="bench-config">
+            <div class="bench-chip-icon">💻</div>
+            <div class="bench-config-label">
+              <h3>Intel Core i5 (CPU Only)</h3>
+              <p>12th Gen &middot; 16 GB RAM &middot; No GPU</p>
+            </div>
+          </div>
+          <div class="bench-stats">
+            <div class="bench-row"><span class="bench-row-label">10,000 images</span><span class="bench-row-value">~3.5 hours</span></div>
+            <div class="bench-bar-wrap"><div class="bench-bar-fill" style="width: 18%;"></div></div>
+            <hr class="bench-divider">
+            <div class="bench-row"><span class="bench-row-label">Throughput</span><span class="bench-row-value">~0.8 img/sec</span></div>
+            <div class="bench-row"><span class="bench-row-label">Batch size</span><span class="bench-row-value">1</span></div>
+          </div>
+          <p class="bench-note">Suitable for small field deployments under 5,000 images.</p>
+        </div>
+
+        <!-- Config 2: Apple M2 -->
+        <div class="bench-card fade-up stagger-2">
+          <div class="bench-config">
+            <div class="bench-chip-icon">🍎</div>
+            <div class="bench-config-label">
+              <h3>Apple M2 (MPS Acceleration)</h3>
+              <p>MacBook Air &middot; 16 GB Unified &middot; MPS Backend</p>
+            </div>
+          </div>
+          <div class="bench-stats">
+            <div class="bench-row"><span class="bench-row-label">10,000 images</span><span class="bench-row-value highlight">~55 minutes</span></div>
+            <div class="bench-bar-wrap"><div class="bench-bar-fill" style="width: 52%;"></div></div>
+            <hr class="bench-divider">
+            <div class="bench-row"><span class="bench-row-label">Throughput</span><span class="bench-row-value">~3.0 img/sec</span></div>
+            <div class="bench-row"><span class="bench-row-label">Batch size</span><span class="bench-row-value">4 (auto)</span></div>
+          </div>
+          <p class="bench-note">Efficient for moderate datasets. No external GPU required.</p>
+        </div>
+
+        <!-- Config 3: i7 + 4090 -->
+        <div class="bench-card fade-up stagger-3">
+          <div class="bench-config">
+            <div class="bench-chip-icon">⚡</div>
+            <div class="bench-config-label">
+              <h3>Intel i7 + NVIDIA RTX 4090</h3>
+              <p>13th Gen &middot; 32 GB RAM &middot; 24 GB VRAM</p>
+            </div>
+          </div>
+          <div class="bench-stats">
+            <div class="bench-row"><span class="bench-row-label">10,000 images</span><span class="bench-row-value highlight">~8 minutes</span></div>
+            <div class="bench-bar-wrap"><div class="bench-bar-fill" style="width: 95%;"></div></div>
+            <hr class="bench-divider">
+            <div class="bench-row"><span class="bench-row-label">Throughput</span><span class="bench-row-value">~20.8 img/sec</span></div>
+            <div class="bench-row"><span class="bench-row-label">Batch size</span><span class="bench-row-value">16 (auto)</span></div>
+          </div>
+          <p class="bench-note">Recommended for large-scale surveys exceeding 50,000 images.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ Workflow ═══════════ -->
   <section class="workflow" id="workflow">
     <div class="container">
       <div class="workflow-header fade-up">
         <span class="section-label">Pipeline</span>
-        <h2 class="section-title">Four steps.<br /><span class="muted">Zero friction.</span></h2>
+        <h2 class="section-title">A streamlined four-stage workflow.<br /><span class="muted">From folder to finished analysis.</span></h2>
       </div>
-
-      <div class="workflow-step fade-up stagger-1">
-        <div class="step-number">01</div>
-        <div class="step-content">
-          <h3>Select Project</h3>
-          <p>Point HabiDATA at your camera-trap folder. It scans for images, videos, and any existing results.</p>
+      <div class="workflow-steps">
+        <div class="workflow-step fade-up stagger-1">
+          <div class="step-number">01</div>
+          <div class="step-content">
+            <h3>Select Project</h3>
+            <p>Point HabiDATA at your camera-trap folder. The application scans for images, videos, and any existing results from prior sessions.</p>
+          </div>
         </div>
-      </div>
-      <div class="workflow-step fade-up stagger-2">
-        <div class="step-number">02</div>
-        <div class="step-content">
-          <h3>Run Detection</h3>
-          <p>Choose model weights, set confidence threshold, and hit Run. A progress bar tracks inference across all files.</p>
+        <div class="workflow-step fade-up stagger-2">
+          <div class="step-number">02</div>
+          <div class="step-content">
+            <h3>Run Detection</h3>
+            <p>Select model weights, configure the confidence threshold, and begin inference. A progress bar tracks processing across all files in the project.</p>
+          </div>
         </div>
-      </div>
-      <div class="workflow-step fade-up stagger-3">
-        <div class="step-number">03</div>
-        <div class="step-content">
-          <h3>Edit & Tag</h3>
-          <p>Walk through detections image-by-image. Correct labels, draw boxes, assign species, and mark as verified.</p>
+        <div class="workflow-step fade-up stagger-3">
+          <div class="step-number">03</div>
+          <div class="step-content">
+            <h3>Edit & Tag</h3>
+            <p>Review detections image-by-image. Correct labels, resize bounding boxes, assign species from taxonomic lists, and mark images as verified.</p>
+          </div>
         </div>
-      </div>
-      <div class="workflow-step fade-up stagger-4">
-        <div class="step-number">04</div>
-        <div class="step-content">
-          <h3>Analyse & Export</h3>
-          <p>Explore capture patterns with interactive charts. Export deployment sheets and summary PNGs for publications.</p>
+        <div class="workflow-step fade-up stagger-4">
+          <div class="step-number">04</div>
+          <div class="step-content">
+            <h3>Analyse & Export</h3>
+            <p>Examine capture patterns through interactive charts. Generate deployment sheets and export summary visualisations for reports and manuscripts.</p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════ Tech Stack ═══════════════ -->
+  <!-- ═══════════ Tech Stack ═══════════ -->
   <section class="tech" id="tech">
     <div class="container">
       <div class="tech-header fade-up">
-        <span class="section-label">Under the Hood</span>
-        <h2 class="section-title">Built for the field.<br /><span class="muted">Engineered for scale.</span></h2>
+        <span class="section-label">Architecture</span>
+        <h2 class="section-title">Purpose-built for field conditions.<br /><span class="muted">Engineered for reliability.</span></h2>
       </div>
-
       <div class="tech-badges fade-up">
         <span class="tech-badge">🐍 Python 3.10+</span>
         <span class="tech-badge">🖥 PySide6 / Qt6</span>
@@ -981,71 +951,53 @@
         <span class="tech-badge">⚡ YOLOv10</span>
         <span class="tech-badge">🧠 EfficientNet-B0</span>
         <span class="tech-badge">💾 SQLite WAL</span>
-        <span class="tech-badge">📝 NDJSON Ledger</span>
         <span class="tech-badge">📊 Pandas</span>
         <span class="tech-badge">📈 Matplotlib</span>
         <span class="tech-badge">🎞 OpenCV</span>
       </div>
-
       <div class="design-grid fade-up">
         <div class="design-item">
           <h3>Offline-First</h3>
-          <p>All inference runs locally. Your images never leave your machine — critical for field stations with limited connectivity and data-sharing restrictions.</p>
+          <p>All inference runs locally on your hardware. Images never leave your machine — essential for field stations with limited connectivity and projects with data-sharing restrictions.</p>
         </div>
         <div class="design-item">
-          <h3>Append-Only Ledger</h3>
-          <p>Edits are appended as NDJSON at the byte level — O(1) saves regardless of dataset size. A 3-second debounce flush consolidates changes.</p>
+          <h3>Crash-Safe Persistence</h3>
+          <p>Detection results are written through SQLite in WAL mode, ensuring atomic batch writes even on external drives. The canonical JSON is rebuilt only after inference completes successfully.</p>
         </div>
         <div class="design-item">
-          <h3>Crash-Safe Writes</h3>
-          <p>Detection results go through SQLite WAL-mode for atomic batch writes, even on external drives. JSON is rebuilt after inference completes.</p>
+          <h3>Cross-Platform</h3>
+          <p>Runs on Windows, macOS, and Linux. Pre-built binaries are available for Windows. macOS users benefit from MPS-accelerated inference on Apple Silicon.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════ Supported Models ═══════════════ -->
+  <!-- ═══════════ Models ═══════════ -->
   <section class="models" id="models">
     <div class="container">
       <div class="models-header fade-up">
-        <span class="section-label">Models</span>
-        <h2 class="section-title">Bring your own weights.<br /><span class="muted">Or use ours.</span></h2>
+        <span class="section-label">Supported Models</span>
+        <h2 class="section-title">Use our defaults or bring your own.<br /><span class="muted">Any Ultralytics-compatible weights.</span></h2>
       </div>
-
       <div class="models-table-wrap fade-up">
         <table class="models-table">
-          <thead>
-            <tr>
-              <th>Model</th>
-              <th>Architecture</th>
-              <th>Classes</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Model</th><th>Architecture</th><th>Classes</th><th>Notes</th></tr></thead>
           <tbody>
             <tr>
-              <td><span class="model-name">MegaDetector v6</span> <span class="model-tag">Default</span></td>
-              <td>YOLOv10-nano</td>
-              <td>animal, human, vehicle</td>
-              <td>Fast and lightweight</td>
+              <td><span class="model-name">MegaDetector v6</span><span class="model-tag">Default</span></td>
+              <td>YOLOv10-nano</td><td>animal, human, vehicle</td><td>Fast, lightweight (Beery et al., 2019)</td>
             </tr>
             <tr>
-              <td><span class="model-name">Custom YOLO</span></td>
-              <td>Ultralytics-compatible</td>
-              <td>User-defined</td>
-              <td>Load any .pt file via model picker</td>
+              <td><span class="model-name">Custom YOLO Weights</span></td>
+              <td>Ultralytics-compatible</td><td>User-defined</td><td>Load any .pt file via model picker</td>
             </tr>
             <tr>
               <td><span class="model-name">Livestock Classifier</span></td>
-              <td>EfficientNet-B0</td>
-              <td>livestock / non-livestock</td>
-              <td>Binary classifier on animal crops</td>
+              <td>EfficientNet-B0</td><td>livestock / non-livestock</td><td>Binary classifier on animal crops</td>
             </tr>
             <tr>
               <td><span class="model-name">SpeciesNet</span></td>
-              <td>Ensemble (external)</td>
-              <td>Species-level</td>
-              <td>CLI bridge integration (experimental)</td>
+              <td>Ensemble (external)</td><td>Species-level</td><td>CLI bridge integration (experimental)</td>
             </tr>
           </tbody>
         </table>
@@ -1053,28 +1005,25 @@
     </div>
   </section>
 
-  <!-- ═══════════════ Citation ═══════════════ -->
+  <!-- ═══════════ Citation ═══════════ -->
   <section class="citation" id="citation">
-    <div class="container">
+    <div class="container" style="max-width:780px;">
       <div class="citation-header fade-up">
-        <span class="section-label">Cite</span>
-        <h2 class="section-title">Use it in research?<br /><span class="muted">Give it a cite.</span></h2>
-        <p>If HabiDATA helps with your camera-trap research, please cite us. It helps the project grow and reach more ecologists.</p>
+        <span class="section-label">Citation</span>
+        <h2 class="section-title">Using HabiDATA in your research?<br /><span class="muted">Please consider citing our work.</span></h2>
+        <p>Proper attribution helps us sustain development and reach more conservation practitioners worldwide.</p>
       </div>
-
       <div class="bibtex-block fade-up">
         <button class="copy-btn" id="copyBtn" onclick="copyBibtex()">Copy BibTeX</button>
         <pre id="bibtexCode">@software{habidata2025,
   title     = {HabiDATA: Habitat-centric Data
                Acquisition, Transform and Analytics},
-  author    = {&lt;Your Name(s)&gt;},
+  author    = {Sharat Agarwal},
   year      = {2025},
-  url       = {https://github.com/&lt;your-org&gt;/HabiDATA},
   note      = {Desktop application for camera-trap
                data processing}
 }</pre>
       </div>
-
       <div class="references fade-up">
         <h3>Related Work</h3>
         <ul>
@@ -1088,85 +1037,199 @@
     </div>
   </section>
 
-  <!-- ═══════════════ Download CTA ═══════════════ -->
+  <!-- ═══════════ Download ═══════════ -->
   <section class="download" id="download">
-    <div class="container">
+    <div class="container" style="max-width:780px;">
       <div class="download-card fade-up">
-        <div class="download-card-glow"></div>
-        <h2>Ready to tame your trap data?</h2>
-        <p>Works on Windows, macOS, and Linux. No internet required after install.</p>
-        <div class="download-buttons">
-          <a href="https://github.com/<your-org>/HabiDATA/releases" class="btn-primary">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download Latest Release
+        <h2>Download HabiDATA</h2>
+        <p>Available for Windows, macOS, and Linux. Runs entirely offline after installation — no account or internet connection required.</p>
+        <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap; position:relative;">
+          <a href="#survey" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Request Download
           </a>
-          <a href="https://github.com/<your-org>/HabiDATA" class="btn-ghost">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-            View on GitHub
-          </a>
+        </div>
+        <p class="download-note">Please complete a brief survey below to receive the download link.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ Survey Form ═══════════ -->
+  <section class="survey" id="survey">
+    <div class="container">
+      <div class="survey-card fade-up">
+        <div id="surveyForm">
+          <h2>Download Survey</h2>
+          <p class="survey-subtitle">Help us understand how HabiDATA is being used in the field. All information is kept confidential and used solely for improving the tool.</p>
+
+          <form id="habiDataSurvey" onsubmit="handleSubmit(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Full Name <span class="required">*</span></label>
+                <input type="text" class="form-input" name="name" placeholder="Dr. Jane Smith" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email Address <span class="required">*</span></label>
+                <input type="email" class="form-input" name="email" placeholder="jane@university.edu" required />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Institution / Organisation <span class="required">*</span></label>
+                <input type="text" class="form-input" name="institution" placeholder="e.g. Wildlife Institute of India" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Role <span class="required">*</span></label>
+                <select class="form-select" name="role" required>
+                  <option value="" disabled selected>Select your role</option>
+                  <option value="phd">PhD Scholar / Research Student</option>
+                  <option value="postdoc">Postdoctoral Researcher</option>
+                  <option value="faculty">Faculty / Principal Investigator</option>
+                  <option value="field">Field Biologist / Ecologist</option>
+                  <option value="manager">Conservation Manager</option>
+                  <option value="ngo">NGO / Non-Profit Staff</option>
+                  <option value="govt">Government / Forest Department</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Primary Use Case <span class="required">*</span></label>
+              <select class="form-select" name="usecase" required>
+                <option value="" disabled selected>What will you use HabiDATA for?</option>
+                <option value="wildlife_monitoring">Wildlife population monitoring</option>
+                <option value="biodiversity_survey">Biodiversity surveys / camera-trap studies</option>
+                <option value="human_wildlife">Human-wildlife conflict assessment</option>
+                <option value="livestock_monitoring">Livestock incursion monitoring</option>
+                <option value="habitat_assessment">Habitat assessment & occupancy modelling</option>
+                <option value="teaching">Teaching / academic coursework</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Estimated Dataset Size</label>
+                <select class="form-select" name="dataset_size">
+                  <option value="" disabled selected>Approx. images per project</option>
+                  <option value="small">&lt; 5,000 images</option>
+                  <option value="medium">5,000 – 25,000 images</option>
+                  <option value="large">25,000 – 100,000 images</option>
+                  <option value="xlarge">&gt; 100,000 images</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Study Region</label>
+                <input type="text" class="form-input" name="region" placeholder="e.g. Western Ghats, India" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Operating System</label>
+              <select class="form-select" name="os">
+                <option value="" disabled selected>Select your primary OS</option>
+                <option value="windows">Windows</option>
+                <option value="macos">macOS</option>
+                <option value="linux">Linux</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">How did you hear about HabiDATA?</label>
+              <select class="form-select" name="referral">
+                <option value="" disabled selected>Select one</option>
+                <option value="colleague">Colleague / Word of mouth</option>
+                <option value="conference">Conference or workshop</option>
+                <option value="paper">Research paper / preprint</option>
+                <option value="social">Social media</option>
+                <option value="search">Web search</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Additional Comments</label>
+              <textarea class="form-textarea" name="comments" placeholder="Any specific features you need, or feedback you'd like to share..."></textarea>
+            </div>
+
+            <button type="submit" class="form-submit">Submit & Get Download Link</button>
+          </form>
+        </div>
+
+        <div class="form-success" id="surveySuccess">
+          <div class="form-success-icon">✅</div>
+          <h3>Thank you for your response!</h3>
+          <p>The download link has been sent to your email address. If you do not receive it within a few minutes, please check your spam folder or contact us directly.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════ Footer ═══════════════ -->
+  <!-- ═══════════ Footer ═══════════ -->
   <footer class="footer">
     <div class="footer-left">
-      <span style="font-size:16px;">🐾</span>
-      <span class="footer-text">HabiDATA &middot; MIT License &middot; 2025</span>
+      <span style="font-size:15px;">🐾</span>
+      <span class="footer-text">HabiDATA &middot; 2025</span>
     </div>
     <div class="footer-links">
-      <a href="https://github.com/<your-org>/HabiDATA">GitHub</a>
       <a href="#citation">Cite</a>
+      <a href="#survey">Contact</a>
     </div>
   </footer>
 
-
-  <!-- ═══════════════ JavaScript ═══════════════ -->
+  <!-- ═══════════ JavaScript ═══════════ -->
   <script>
-    // ── Navbar scroll effect ──
+    // Nav scroll
     const nav = document.getElementById('nav');
-    window.addEventListener('scroll', () => {
-      nav.classList.toggle('scrolled', window.scrollY > 50);
-    });
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40));
 
-    // ── Mobile nav toggle ──
+    // Mobile nav
     const toggle = document.getElementById('navToggle');
     const links = document.getElementById('navLinks');
-    toggle.addEventListener('click', () => {
-      links.classList.toggle('open');
-    });
-    // Close mobile nav on link click
-    document.querySelectorAll('.nav-link, .nav-cta').forEach(a => {
-      a.addEventListener('click', () => links.classList.remove('open'));
-    });
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    document.querySelectorAll('.nav-link, .nav-cta').forEach(a =>
+      a.addEventListener('click', () => links.classList.remove('open'))
+    );
 
-    // ── Intersection Observer for fade-in animations ──
+    // Intersection Observer
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12 });
-
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.1 });
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-    // ── Copy BibTeX ──
+    // App Preview Tabs
+    document.querySelectorAll('.preview-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.preview-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Copy BibTeX
     function copyBibtex() {
       const code = document.getElementById('bibtexCode').textContent;
       const btn = document.getElementById('copyBtn');
       navigator.clipboard.writeText(code).then(() => {
-        btn.textContent = 'Copied!';
-        btn.classList.add('copied');
-        setTimeout(() => {
-          btn.textContent = 'Copy BibTeX';
-          btn.classList.remove('copied');
-        }, 2000);
+        btn.textContent = 'Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy BibTeX'; btn.classList.remove('copied'); }, 2000);
       });
     }
-  </script>
 
+    // Survey Form
+    function handleSubmit(e) {
+      e.preventDefault();
+      // In production, replace with actual form submission (e.g. Google Forms, Formspree, etc.)
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+      console.log('Survey submission:', data);
+
+      document.getElementById('surveyForm').style.display = 'none';
+      document.getElementById('surveySuccess').classList.add('show');
+    }
+  </script>
 </body>
 </html>
