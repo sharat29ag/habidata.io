@@ -759,6 +759,18 @@ body::after {
 }
 .download-input:focus { border-color: var(--accent); }
 .download-input::placeholder { color: var(--text-dim); }
+.download-select {
+  flex: 1; min-width: 160px; padding: 11px 16px;
+  background: rgba(16,20,16,0.85); border: 1px solid var(--border);
+  border-radius: 9px; color: var(--text); font-family: var(--font);
+  font-size: 14px; transition: border-color 0.3s ease; outline: none;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236d826d' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+  cursor: pointer;
+}
+.download-select:focus { border-color: var(--accent); }
+.download-select option { background: var(--bg-elevated); color: var(--text); }
 .download-submit {
   padding: 11px 24px; background: var(--accent); color: var(--bg);
   border: none; border-radius: 9px; font-size: 14px; font-weight: 700;
@@ -821,7 +833,7 @@ body::after {
       <a href="#tech" class="nav-link">Architecture</a>
       <a href="#community-survey" class="nav-link">Survey</a>
       <a href="#download" class="nav-cta">Download</a>
-      <a href="#citation" class="nav-link">Cite</a>
+      <!-- <a href="#citation" class="nav-link">Cite</a> -->
     </div>
   </nav>
 
@@ -878,7 +890,7 @@ body::after {
     <div class="container">
       <div class="highlights-header fade-up">
         <span class="section-label">Why HabiDATA</span>
-        <h2 class="section-title">Everything you need for camera-trap analysis.<br /><span class="muted">Nothing you don't.</span></h2>
+        <h2 class="section-title">Everything you need for camera-trap analysis.</h2>
       </div>
       <div class="highlights-grid">
         <div class="hl-card fade-up stagger-1">
@@ -1147,7 +1159,7 @@ body::after {
   <!-- ═══════════════════════════════════════════
        SUPPORTED MODELS
        ═══════════════════════════════════════════ -->
-  <section class="models" id="models">
+  <!-- <section class="models" id="models">
     <div class="container">
       <div class="models-header fade-up">
         <span class="section-label">Supported Models</span>
@@ -1165,7 +1177,7 @@ body::after {
         </table>
       </div>
     </div>
-  </section>
+  </section> -->
 
 
   <!-- ═══════════════════════════════════════════
@@ -1210,14 +1222,22 @@ body::after {
           </div>
           <div class="download-form-inline">
             <input type="text" class="download-input" id="dlInstitution" placeholder="Institution / Organisation" required />
-            <button class="download-submit" onclick="handleDownload()">Get Download Link</button>
+            <select class="download-select" id="dlOS">
+              <option value="" disabled selected>Select OS</option>
+              <option value="Windows">Windows</option>
+              <option value="macOS">macOS</option>
+              <!-- <option value="Linux">🐧 Linux</option> -->
+            </select>
           </div>
-          <p class="download-note">We collect this information solely to understand our user base and keep you informed of major updates.</p>
+          <div class="download-form-inline" style="justify-content:center; margin-top:8px;">
+            <button class="download-submit" onclick="handleDownload()">Request Download Link</button>
+          </div>
+          <p class="download-note">The download link will be shared to your email within 24 hours. We collect this information solely to understand our user base and keep you informed of updates.</p>
         </div>
         <div class="download-success" id="downloadSuccess">
           <div class="download-success-icon">✅</div>
           <h3>Thank you!</h3>
-          <p>The download link will be sent to your email shortly. While you wait, consider filling out our <a href="https://docs.google.com/forms/d/e/1FAIpQLSeyUPuRmfNl2SZSA_K4gWACJoViXT5uH26CcUBXQqa0bmsjwA/viewform?usp=header" target="_blank" rel="noopener" style="color:var(--accent); text-decoration:underline;">community survey</a> — it helps us build a better tool for everyone.</p>
+          <p>The download link for <strong id="dlOSConfirm"></strong> will be sent to <strong id="dlEmailConfirm"></strong> within 24 hours. While you wait, consider filling out our <a href="https://docs.google.com/forms/d/e/1FAIpQLSeyUPuRmfNl2SZSA_K4gWACJoViXT5uH26CcUBXQqa0bmsjwA/viewform?usp=header" target="_blank" rel="noopener" style="color:var(--accent); text-decoration:underline;">community survey</a> — it helps us build a better tool for everyone.</p>
         </div>
         <div class="download-platforms">
           <span class="platform-badge">🪟 Windows</span>
@@ -1231,7 +1251,7 @@ body::after {
     <!-- ═══════════════════════════════════════════
        CITATION
        ═══════════════════════════════════════════ -->
-  <section class="citation" id="citation">
+  <!-- <section class="citation" id="citation">
     <div class="container" style="max-width:780px;">
       <div class="citation-header fade-up">
         <span class="section-label">Citation</span>
@@ -1248,7 +1268,7 @@ body::after {
   note      = {Desktop application for camera-trap
                data processing}
 }</pre>
-      </div>
+      </div> -->
       <!-- <div class="references fade-up">
         <h3>Related Work</h3>
         <ul>
@@ -1272,7 +1292,7 @@ body::after {
       <span class="footer-text">HabiDATA · 2025</span>
     </div>
     <div class="footer-links">
-      <a href="#citation">Cite</a>
+      <!-- <a href="#citation">Cite</a> -->
       <a href="#community-survey">Survey</a>
       <a href="#download">Download</a>
     </div>
@@ -1328,26 +1348,87 @@ function handleDownload() {
   const name = document.getElementById('dlName').value.trim();
   const email = document.getElementById('dlEmail').value.trim();
   const inst = document.getElementById('dlInstitution').value.trim();
+  const os = document.getElementById('dlOS').value;
 
-  if (!name || !email || !inst) {
-    if (!name) document.getElementById('dlName').style.borderColor = '#ff5f57';
-    if (!email) document.getElementById('dlEmail').style.borderColor = '#ff5f57';
-    if (!inst) document.getElementById('dlInstitution').style.borderColor = '#ff5f57';
+  // Validate all fields
+  let hasError = false;
+  if (!name) { document.getElementById('dlName').style.borderColor = '#ff5f57'; hasError = true; }
+  if (!email) { document.getElementById('dlEmail').style.borderColor = '#ff5f57'; hasError = true; }
+  if (!inst) { document.getElementById('dlInstitution').style.borderColor = '#ff5f57'; hasError = true; }
+  if (!os) { document.getElementById('dlOS').style.borderColor = '#ff5f57'; hasError = true; }
+
+  if (hasError) {
     setTimeout(() => {
-      document.querySelectorAll('.download-input').forEach(i => i.style.borderColor = '');
+      document.querySelectorAll('.download-input, .download-select').forEach(i => i.style.borderColor = '');
     }, 2000);
     return;
   }
 
-  // TODO: Connect to backend (Formspree, Google Sheet, etc.)
-  console.log('Download request:', { name, email, institution: inst });
+  // Disable button while submitting
+  const btn = document.querySelector('.download-submit');
+  btn.textContent = 'Submitting...';
+  btn.disabled = true;
 
+  // ── Send to Google Sheets via Apps Script ──
+  // SETUP INSTRUCTIONS:
+  // 1. Create a Google Sheet with columns: Timestamp | Name | Email | Institution | OS
+  // 2. Go to Extensions → Apps Script
+  // 3. Paste this code:
+  //
+  //    function doPost(e) {
+  //      var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  //      var data = JSON.parse(e.postData.contents);
+  //      sheet.appendRow([
+  //        new Date(),
+  //        data.name,
+  //        data.email,
+  //        data.institution,
+  //        data.os
+  //      ]);
+  //      return ContentService
+  //        .createTextOutput(JSON.stringify({result: 'success'}))
+  //        .setMimeType(ContentService.MimeType.JSON);
+  //    }
+  //
+  // 4. Deploy → New Deployment → Web App → Execute as: Me, Access: Anyone
+  // 5. Copy the URL and paste it below replacing YOUR_APPS_SCRIPT_URL
+  //
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqzmZIK_EwOqWnydNPFBkbUXiCzK4xZJyfViLJfzbH5gHfvcaO8S0qn7CIaRA3Dv3J/exec';
+
+  const payload = { name, email, institution: inst, os };
+
+  if (APPS_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbwqzmZIK_EwOqWnydNPFBkbUXiCzK4xZJyfViLJfzbH5gHfvcaO8S0qn7CIaRA3Dv3J/exec') {
+    // Apps Script not configured yet — just show success
+    console.log('Download request (Apps Script not configured):', payload);
+    showSuccess(email, os);
+    return;
+  }
+
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    showSuccess(email, os);
+  })
+  .catch((err) => {
+    console.error('Submission error:', err);
+    // Still show success to the user — data may have gone through
+    showSuccess(email, os);
+  });
+}
+
+function showSuccess(email, os) {
+  document.getElementById('dlEmailConfirm').textContent = email;
+  document.getElementById('dlOSConfirm').textContent = os;
   document.getElementById('downloadForm').style.display = 'none';
   document.getElementById('downloadSuccess').classList.add('show');
 }
 
 // Allow Enter key to submit download form
-document.querySelectorAll('.download-input').forEach(input => {
+document.querySelectorAll('.download-input, .download-select').forEach(input => {
   input.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') handleDownload();
   });
