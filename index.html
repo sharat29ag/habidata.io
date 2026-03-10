@@ -1292,7 +1292,6 @@ body::after {
       <span class="footer-text">HabiDATA · 2025</span>
     </div>
     <div class="footer-links">
-      <!-- <a href="#citation">Cite</a> -->
       <a href="#community-survey">Survey</a>
       <a href="#download">Download</a>
     </div>
@@ -1397,13 +1396,6 @@ function handleDownload() {
 
   const payload = { name, email, institution: inst, os };
 
-  if (APPS_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbwqzmZIK_EwOqWnydNPFBkbUXiCzK4xZJyfViLJfzbH5gHfvcaO8S0qn7CIaRA3Dv3J/exec') {
-    // Apps Script not configured yet — just show success
-    console.log('Download request (Apps Script not configured):', payload);
-    showSuccess(email, os);
-    return;
-  }
-
   fetch(APPS_SCRIPT_URL, {
     method: 'POST',
     mode: 'no-cors',
@@ -1415,10 +1407,10 @@ function handleDownload() {
   })
   .catch((err) => {
     console.error('Submission error:', err);
-    // Still show success to the user — data may have gone through
     showSuccess(email, os);
   });
 }
+
 
 function showSuccess(email, os) {
   document.getElementById('dlEmailConfirm').textContent = email;
