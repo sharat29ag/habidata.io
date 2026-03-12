@@ -822,6 +822,12 @@ body::after {
 }
 .footer-left { display: flex; align-items: center; gap: 10px; }
 .footer-org { display: flex; align-items: center; gap: 8px; }
+.footer-contact { display: flex; align-items: center; }
+.footer-email {
+  font-size: 12.5px; color: var(--text-dim); text-decoration: none;
+  transition: color 0.3s ease;
+}
+.footer-email:hover { color: var(--accent); }
 .footer-text { font-size: 12.5px; color: var(--text-dim); }
 .footer-links { display: flex; gap: 20px; }
 .footer-links a { font-size: 12.5px; color: var(--text-dim); transition: color 0.3s; }
@@ -1123,10 +1129,10 @@ body::after {
             <div class="bench-config-label"><h3>Apple M2</h3><p>MacBook Air · 16 GB Unified </p></div>
           </div>
           <div class="bench-stats">
-            <div class="bench-row"><span class="bench-row-label">10,000 images</span><span class="bench-row-value highlight">~25 minutes</span></div>
+            <div class="bench-row"><span class="bench-row-label">10,000 images</span><span class="bench-row-value highlight">~X minutes</span></div>
             <div class="bench-bar-wrap"><div class="bench-bar-fill" style="width: 52%;"></div></div>
             <hr class="bench-divider">
-            <div class="bench-row"><span class="bench-row-label">Throughput</span><span class="bench-row-value">~7 img/sec</span></div>
+            <div class="bench-row"><span class="bench-row-label">Throughput</span><span class="bench-row-value">~X img/sec</span></div>
             <div class="bench-row"><span class="bench-row-label">Batch size</span><span class="bench-row-value">8 (auto)</span></div>
           </div>
           <!-- <p class="bench-note">Efficient for moderate datasets. No external GPU required.</p> -->
@@ -1258,7 +1264,7 @@ body::after {
               <option value="" disabled selected>Select OS</option>
               <option value="Windows">🪟 Windows</option>
               <option value="macOS">🍎 macOS</option>
-              <!-- <option value="Linux">🐧 Linux</option> -->
+              <option value="Linux">🐧 Linux</option>
             </select>
           </div>
           <div class="download-form-inline" style="justify-content:center; margin-top:8px;">
@@ -1323,10 +1329,9 @@ body::after {
       <span style="font-size:30px;">🐾</span>
       <span class="footer-text">HabiDATA · 2025</span>
     </div>
-    <!-- <div class="footer-org">
-      <span class="footer-text">Developed at</span>
-      <img src="images/logos/THT.png" alt="The Habitats Trust" style="height:40px; border-radius:4px; opacity:0.7;" />
-    </div> -->
+    <div class="footer-contact">
+      <a href="mailto:sharat29ag@gmail.com" class="footer-email">📧 sharat29ag@gmail.com</a>
+    </div>
     <div class="footer-links">
       <a href="#community-survey">Survey</a>
       <a href="#download">Download</a>
@@ -1426,18 +1431,9 @@ function handleDownload() {
   //    }
   //
   // 4. Deploy → New Deployment → Web App → Execute as: Me, Access: Anyone
-  // 5. Copy the URL and paste it below replacing YOUR_APPS_SCRIPT_URL
-  //
-  const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqzmZIK_EwOqWnydNPFBkbUXiCzK4xZJyfViLJfzbH5gHfvcaO8S0qn7CIaRA3Dv3J/exec';
 
   const payload = { name, email, institution: inst, os };
-
-  if (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') {
-    // Apps Script not configured yet — just show success
-    console.log('Download request (Apps Script not configured):', payload);
-    showSuccess(email, os);
-    return;
-  }
 
   fetch(APPS_SCRIPT_URL, {
     method: 'POST',
@@ -1450,7 +1446,6 @@ function handleDownload() {
   })
   .catch((err) => {
     console.error('Submission error:', err);
-    // Still show success to the user — data may have gone through
     showSuccess(email, os);
   });
 }
