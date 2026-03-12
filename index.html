@@ -276,6 +276,26 @@ body::after {
   margin-bottom: 36px; letter-spacing: 0.5px;
 }
 .hero-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.hero-org-credit {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 32px;
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+.hero-org-credit:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-dim);
+}
+.hero-org-credit span {
+  font-size: 11.5px; color: var(--text-dim); font-weight: 500;
+}
+.hero-org-credit img {
+  height: 18px; border-radius: 3px; opacity: 0.8;
+}
+.hero-org-credit:hover img { opacity: 1; }
 .scroll-indicator {
   position: absolute; bottom: 32px; left: 50%;
   animation: float 3s ease-in-out infinite; opacity: 0.35;
@@ -506,7 +526,7 @@ body::after {
   gap: 56px; flex-wrap: wrap; padding: 0 48px;
 }
 .logo-item {
-  height: 92px; opacity: 0.7;
+  height: 100px; opacity: 0.7;
   transition: all 0.4s ease; object-fit: contain;
 }
 .logo-item:hover { opacity: 1; }
@@ -801,6 +821,7 @@ body::after {
   flex-wrap: wrap; gap: 14px;
 }
 .footer-left { display: flex; align-items: center; gap: 10px; }
+.footer-org { display: flex; align-items: center; gap: 8px; }
 .footer-text { font-size: 12.5px; color: var(--text-dim); }
 .footer-links { display: flex; gap: 20px; }
 .footer-links a { font-size: 12.5px; color: var(--text-dim); transition: color 0.3s; }
@@ -862,6 +883,10 @@ body::after {
         </a>
         <a href="#walkthrough" class="btn-secondary">See How It Works</a>
       </div>
+      <!-- <a href="https://thehabitatstrust.org" target="_blank" rel="noopener" class="hero-org-credit"> -->
+        <!-- <span>Developed at</span>
+        <img src="images/logos/THT.png" alt="The Habitats Trust" /> -->
+      <!-- </a> -->
     </div>
     <div class="scroll-indicator">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6d826d" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
@@ -875,10 +900,12 @@ body::after {
   <section class="partners" id="partners">
     <div class="partners-label">Trusted by research institutions and conservation organisations</div>
     <div class="logo-row">
+      <img class="logo-item" src="images/logos/THT.png" alt="The Habitats Trust" />
       <img class="logo-item" src="images/logos/Kaziranga.png" alt="Kaziranga National Park" />
-      <img class="logo-item" src="images/logos/KANS.png" alt="Kenneth Anderson Nature Society" />
       <img class="logo-item" src="images/logos/HNF.png" alt="Holematthi Nature Foundation" />
       <img class="logo-item" src="images/logos/TGT.png" alt="The Grasslands Trust" />
+      <img class="logo-item" src="images/logos/KANS.png" alt="Kenneth Anderson Nature Society" />
+      
     </div>
   </section>
 
@@ -890,14 +917,14 @@ body::after {
     <div class="container">
       <div class="highlights-header fade-up">
         <span class="section-label">Why HabiDATA</span>
-        <h2 class="section-title">Everything you need for camera-trap analysis.</h2>
+        <h2 class="section-title">Everything you need for camera-trap analysis.<br /><span class="muted">From detection to deployment sheet.</span></h2>
       </div>
       <div class="highlights-grid">
-        <div class="hl-card fade-up stagger-1">
+        <!-- <div class="hl-card fade-up stagger-1">
           <div class="hl-icon">🖥</div>
           <h3>Desktop-Native</h3>
           <p>Built with PySide6/Qt6 for a responsive, native desktop experience</p>
-        </div>
+        </div> -->
         <div class="hl-card fade-up stagger-2">
           <div class="hl-icon">📡</div>
           <h3>Offline</h3>
@@ -922,6 +949,11 @@ body::after {
           <div class="hl-icon">🐄</div>
           <h3>Livestock Filtering</h3>
           <p>Binary classifier separates livestock from wildlife automatically</p>
+        </div>
+        <div class="hl-card fade-up stagger-1">
+          <div class="hl-icon">🎯</div>
+          <h3>India-First AI Models</h3>
+          <p>Livestock classifier trained on Indian reserve data. Species classifier for Indian fauna — coming soon</p>
         </div>
         <div class="hl-card fade-up stagger-3">
           <div class="hl-icon">🔄</div>
@@ -1224,9 +1256,9 @@ body::after {
             <input type="text" class="download-input" id="dlInstitution" placeholder="Institution / Organisation" required />
             <select class="download-select" id="dlOS">
               <option value="" disabled selected>Select OS</option>
-              <option value="Windows">Windows</option>
-              <option value="macOS">macOS</option>
-              <!-- <option value="Linux">🐧 Linux</option> -->
+              <option value="Windows">🪟 Windows</option>
+              <option value="macOS">🍎 macOS</option>
+              <option value="Linux">🐧 Linux</option>
             </select>
           </div>
           <div class="download-form-inline" style="justify-content:center; margin-top:8px;">
@@ -1288,9 +1320,13 @@ body::after {
        ═══════════════════════════════════════════ -->
   <footer class="footer">
     <div class="footer-left">
-      <span style="font-size:15px;">🐾</span>
+      <span style="font-size:30px;">🐾</span>
       <span class="footer-text">HabiDATA · 2025</span>
     </div>
+    <!-- <div class="footer-org">
+      <span class="footer-text">Developed at</span>
+      <img src="images/logos/THT.png" alt="The Habitats Trust" style="height:40px; border-radius:4px; opacity:0.7;" />
+    </div> -->
     <div class="footer-links">
       <a href="#community-survey">Survey</a>
       <a href="#download">Download</a>
@@ -1392,9 +1428,16 @@ function handleDownload() {
   // 4. Deploy → New Deployment → Web App → Execute as: Me, Access: Anyone
   // 5. Copy the URL and paste it below replacing YOUR_APPS_SCRIPT_URL
   //
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqzmZIK_EwOqWnydNPFBkbUXiCzK4xZJyfViLJfzbH5gHfvcaO8S0qn7CIaRA3Dv3J/exec';
+  const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL';
 
   const payload = { name, email, institution: inst, os };
+
+  if (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') {
+    // Apps Script not configured yet — just show success
+    console.log('Download request (Apps Script not configured):', payload);
+    showSuccess(email, os);
+    return;
+  }
 
   fetch(APPS_SCRIPT_URL, {
     method: 'POST',
@@ -1407,10 +1450,10 @@ function handleDownload() {
   })
   .catch((err) => {
     console.error('Submission error:', err);
+    // Still show success to the user — data may have gone through
     showSuccess(email, os);
   });
 }
-
 
 function showSuccess(email, os) {
   document.getElementById('dlEmailConfirm').textContent = email;
