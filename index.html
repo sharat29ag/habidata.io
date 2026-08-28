@@ -1,1469 +1,449 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HabiDATA — Habitat-centric Data Acquisition, Transform & Analytics</title>
-  <meta name="description" content="HabiDATA is a unified offline desktop application for camera-trap image and video processing — from raw captures to publication-ready analytics." />
-  <meta name="keywords" content="camera trap, wildlife monitoring, MegaDetector, YOLO, computer vision, ecology, conservation, desktop application, species detection" />
-  <meta property="og:title" content="HabiDATA — One-Stop Platform for Camera-Trap Data Processing" />
-  <meta property="og:description" content="A unified offline desktop pipeline for camera-trap image processing with AI detection, human-in-the-loop verification, and publication-ready analytics." />
-  <meta property="og:type" content="website" />
-
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;0,6..12,800;1,6..12,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-
-  <!-- Favicon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>" />
-
-  <!-- Stylesheets (edit each independently) -->
-  <style>
-/* ── base.css ── */
-/* ══════════════════════════════════════════════════
-   base.css — Theme variables, reset, typography
-   Edit this file to change colours, fonts, spacing
-   ══════════════════════════════════════════════════ */
-
-:root {
-  /* Colours */
-  --accent: #5ec27a;
-  --accent-light: #8ae8a4;
-  --accent-dim: rgba(94, 194, 122, 0.07);
-  --accent-border: rgba(94, 194, 122, 0.15);
-  --accent-glow: rgba(94, 194, 122, 0.25);
-  --bg: #0c100c;
-  --bg-elevated: #131813;
-  --bg-card: rgba(26, 31, 26, 0.75);
-  --text: #e8f2e8;
-  --text-secondary: #a3b8a3;
-  --text-dim: #6d826d;
-  --border: #222e22;
-  --border-light: #2a382a;
-
-  /* Typography */
-  --font: 'Nunito Sans', system-ui, -apple-system, sans-serif;
-  --mono: 'JetBrains Mono', 'Consolas', monospace;
-
-  /* Spacing */
-  --section-pad: 120px;
-  --section-pad-mobile: 72px;
-  --container-max: 1120px;
-}
-
-/* Reset */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-html {
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: var(--accent) var(--bg);
-}
-
-body {
-  font-family: var(--font);
-  background: var(--bg);
-  color: var(--text);
-  overflow-x: hidden;
-  line-height: 1.65;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-::selection { background: var(--accent); color: var(--bg); }
-a { color: inherit; text-decoration: none; }
-button { font-family: var(--font); cursor: pointer; }
-img { max-width: 100%; height: auto; display: block; }
-
-/* Container */
-.container {
-  max-width: var(--container-max);
-  margin: 0 auto;
-  padding: 0 48px;
-}
-@media (max-width: 768px) {
-  .container { padding: 0 24px; }
-}
-
-/* Film grain overlay */
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  pointer-events: none; z-index: 9999;
-  opacity: 0.018;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* Shared typography */
-.section-label {
-  font-family: var(--mono);
-  font-size: 20px;
-  color: var(--accent);
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  font-weight: 600;
-  display: block;
-  margin-bottom: 14px;
-}
-.section-title {
-  font-size: clamp(30px, 3.5vw, 42px);
-  font-weight: 800;
-  letter-spacing: -0.8px;
-  line-height: 1.15;
-}
-.section-title .muted {
-  color: var(--text-secondary);
-  font-weight: 400;
-}
-
-/* Buttons */
-.btn-primary {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 13px 30px; background: var(--accent); color: var(--bg);
-  border: none; border-radius: 10px; font-size: 14.5px; font-weight: 700;
-  cursor: pointer; transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
-}
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 36px var(--accent-glow);
-}
-.btn-secondary {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 13px 30px; background: transparent; color: var(--text);
-  border: 1.5px solid var(--border-light); border-radius: 10px;
-  font-size: 14.5px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
-}
-.btn-secondary:hover {
-  border-color: var(--accent); color: var(--accent);
-}
-
-/* Animations */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes pulse {
-  0%, 100% { opacity: 0.35; }
-  50%      { opacity: 1; }
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0) translateX(-50%); }
-  50%      { transform: translateY(-6px) translateX(-50%); }
-}
-
-.fade-up {
-  opacity: 0; transform: translateY(28px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
-}
-.fade-up.visible { opacity: 1; transform: translateY(0); }
-.stagger-1 { transition-delay: 0.08s; }
-.stagger-2 { transition-delay: 0.16s; }
-.stagger-3 { transition-delay: 0.24s; }
-.stagger-4 { transition-delay: 0.32s; }
-.stagger-5 { transition-delay: 0.40s; }
-
-
-/* ── nav-hero.css ── */
-/* ══════════════════════════════════════════════════
-   nav.css — Sticky navigation bar
-   ══════════════════════════════════════════════════ */
-
-.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  padding: 0 48px; height: 60px;
-  display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid transparent;
-  transition: all 0.35s ease;
-}
-.nav.scrolled {
-  background: rgba(12, 16, 12, 0.94);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border-bottom-color: var(--border);
-}
-.nav-logo { display: flex; align-items: center; gap: 10px; }
-.nav-logo-icon { font-size: 20px; }
-.nav-logo-text { font-weight: 800; font-size: 17px; letter-spacing: 1.2px; }
-.nav-logo-text span { color: var(--accent); }
-
-.nav-links { display: flex; align-items: center; gap: 28px; }
-.nav-link {
-  position: relative; color: var(--text-secondary);
-  font-size: 13.5px; font-weight: 600; letter-spacing: 0.3px;
-  transition: color 0.3s ease;
-}
-.nav-link:hover { color: var(--accent); }
-.nav-link::after {
-  content: ''; position: absolute; bottom: -3px; left: 0;
-  width: 0; height: 1.5px; background: var(--accent);
-  transition: width 0.3s ease;
-}
-.nav-link:hover::after { width: 100%; }
-
-.nav-cta {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 7px 18px; background: var(--accent); color: var(--bg);
-  border-radius: 7px; font-size: 13px; font-weight: 700;
-  transition: all 0.3s ease;
-}
-.nav-cta:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px var(--accent-glow);
-}
-
-.nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
-.nav-toggle span {
-  display: block; width: 20px; height: 2px;
-  background: var(--text); margin: 4px 0; border-radius: 2px; transition: 0.3s;
-}
-
-@media (max-width: 768px) {
-  .nav { padding: 0 24px; }
-  .nav-links {
-    display: none; position: absolute; top: 60px; left: 0; right: 0;
-    background: rgba(12,16,12,0.97); backdrop-filter: blur(16px);
-    flex-direction: column; padding: 24px; gap: 18px;
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-links.open { display: flex; }
-  .nav-toggle { display: block; }
-}
-
-
-/* ══════════════════════════════════════════════════
-   hero.css — Hero section
-   ══════════════════════════════════════════════════ */
-
-.hero {
-  min-height: 100vh; display: flex; flex-direction: column;
-  justify-content: center; align-items: center; text-align: center;
-  padding: 100px 24px 60px; position: relative;
-}
-.hero-glow {
-  position: absolute; top: 15%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 650px; height: 650px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(94,194,122,0.035) 0%, transparent 65%);
-  pointer-events: none;
-}
-.hero-content {
-  position: relative; animation: fadeUp 0.9s ease forwards; max-width: 720px;
-}
-.hero-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 5px 14px; margin-bottom: 28px;
-  background: var(--accent-dim); border: 1px solid rgba(94,194,122,0.1);
-  border-radius: 18px; font-size: 12.5px; color: var(--text-secondary); font-weight: 600;
-}
-.hero-badge-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--accent); animation: pulse 2s infinite;
-}
-.hero h1 {
-  font-size: clamp(40px, 6vw, 68px); font-weight: 800;
-  line-height: 1.08; letter-spacing: -1.5px; margin-bottom: 10px;
-}
-.hero-gradient {
-  background: linear-gradient(135deg, var(--accent), var(--accent-light));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.hero-subtitle {
-  font-size: clamp(15px, 2vw, 18px); color: var(--text-secondary);
-  max-width: 700px; margin: 0 auto 14px; line-height: 1.65; font-weight: 400;
-}
-.hero-full-form {
-  font-family: var(--mono); font-size: 13px; color: var(--text-dim);
-  margin-bottom: 36px; letter-spacing: 0.5px;
-}
-.hero-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-.hero-org-credit {
-  display: inline-flex; align-items: center; gap: 8px;
-  margin-top: 32px;
-  padding: 6px 16px;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-.hero-org-credit:hover {
-  border-color: var(--accent-border);
-  background: var(--accent-dim);
-}
-.hero-org-credit span {
-  font-size: 11.5px; color: var(--text-dim); font-weight: 500;
-}
-.hero-org-credit img {
-  height: 18px; border-radius: 3px; opacity: 0.8;
-}
-.hero-org-credit:hover img { opacity: 1; }
-.scroll-indicator {
-  position: absolute; bottom: 32px; left: 50%;
-  animation: float 3s ease-in-out infinite; opacity: 0.35;
-}
-
-
-/* ── highlights.css ── */
-/* ══════════════════════════════════════════════════
-   highlights.css — 4×2 icon grid (AddaxAI-style)
-   ══════════════════════════════════════════════════ */
-
-.highlights {
-  padding: 100px 0 40px;
-}
-.highlights-header {
-  margin-bottom: 48px;
-}
-.highlights-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-.hl-card {
-  background: rgba(26, 31, 26, 0.55);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 32px 20px 28px;
-  text-align: center;
-  backdrop-filter: blur(10px);
-  transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
-}
-.hl-card:hover {
-  border-color: var(--accent-border);
-  transform: translateY(-3px);
-  box-shadow: 0 16px 48px rgba(94, 194, 122, 0.04);
-}
-.hl-icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid var(--accent);
-  border-radius: 12px;
-  font-size: 28px;
-  color: var(--accent);
-  background: rgba(94, 194, 122, 0.04);
-}
-.hl-card h3 {
-  font-size: 15px;
-  font-weight: 800;
-  margin-bottom: 6px;
-  letter-spacing: -0.2px;
-}
-.hl-card p {
-  font-size: 12.5px;
-  color: var(--text-secondary);
-  line-height: 1.55;
-}
-
-@media (max-width: 900px) {
-  .highlights-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 480px) {
-  .highlights-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-  .hl-card { padding: 24px 14px 20px; }
-  .hl-icon { width: 52px; height: 52px; font-size: 24px; }
-}
-
-/* ── walkthrough.css ── */
-/* ══════════════════════════════════════════════════
-   walkthrough.css — 2×2 card grid with screenshots
-   ══════════════════════════════════════════════════ */
-
-.walkthrough {
-  padding: var(--section-pad) 0;
-}
-.walkthrough .container {
-  max-width: 1200px;
-}
-.walkthrough-header {
-  margin-bottom: 56px;
-}
-
-/* ── 2-column grid ── */
-.walk-grid {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 20px !important;
-}
-
-/* ── Individual card ── */
-.walk-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
-  position: relative;
-}
-
-.walk-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  opacity: 0;
-  transition: opacity 0.35s ease;
-}
-
-.walk-card:hover {
-  border-color: var(--accent-border);
-  transform: translateY(-4px);
-  box-shadow:
-    0 20px 56px rgba(0, 0, 0, 0.3),
-    0 0 0 1px var(--accent-border);
-}
-.walk-card:hover::before {
-  opacity: 1;
-}
-
-/* ── Screenshot area ── */
-.walk-card-img {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  border-bottom: 1px solid var(--border);
-}
-
-.walk-card-img img {
-  display: block;
-  width: 100%;
-  height: auto;
-  transition: transform 0.5s ease;
-}
-
-.walk-card:hover .walk-card-img img {
-  transform: scale(1.02);
-}
-
-/* ── Step badge on top of image ── */
-.walk-step-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 2;
-  background: rgba(12, 16, 12, 0.85);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(94, 194, 122, 0.2);
-  border-radius: 6px;
-  padding: 3px 10px;
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--accent);
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-
-/* ── Text body below image ── */
-.walk-card-body {
-  padding: 20px 22px 24px;
-}
-
-.walk-card-body h3 {
-  font-size: 17px;
-  font-weight: 800;
-  margin-bottom: 8px;
-  letter-spacing: -0.3px;
-}
-
-.walk-card-body p {
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.65;
-  margin-bottom: 14px;
-}
-
-/* ── Tags row ── */
-.walk-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.walk-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 3px 9px;
-  background: var(--accent-dim);
-  border: 1px solid rgba(94, 194, 122, 0.08);
-  border-radius: 10px;
-  font-size: 10.5px;
-  color: var(--text-dim);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-/* ── Responsive ── */
-@media (max-width: 640px) {
-  .walkthrough {
-    padding: var(--section-pad-mobile) 0;
-  }
-  .walk-grid {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-
-/* ── sections.css ── */
-/* ══════════════════════════════════════════════════
-   partners.css — Logo row
-   ══════════════════════════════════════════════════ */
-
-.partners { padding: 56px 0 0; }
-.partners-label {
-  text-align: center; font-size: 12px; color: var(--text-dim);
-  font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
-  margin-bottom: 32px;
-}
-.logo-row {
-  display: flex; align-items: center; justify-content: center;
-  gap: 56px; flex-wrap: wrap; padding: 0 48px;
-}
-.logo-item {
-  height: 100px; opacity: 0.7;
-  transition: all 0.4s ease; object-fit: contain;
-}
-.logo-item:hover { opacity: 1; }
-@media (max-width: 768px) {
-  .logo-row { gap: 32px; padding: 0 24px; }
-  .logo-item { height: 56px; }
-}
-
-
-/* ══════════════════════════════════════════════════
-   features.css — Compact 5-column feature badges
-   ══════════════════════════════════════════════════ */
-
-.features { padding: var(--section-pad) 0; }
-.features-header { margin-bottom: 48px; }
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 14px;
-}
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 24px 20px;
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  transition: all 0.35s cubic-bezier(0.23,1,0.32,1);
-  position: relative; overflow: hidden;
-}
-.card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  opacity: 0; transition: opacity 0.35s ease;
-}
-.card:hover {
-  border-color: var(--accent-border);
-  transform: translateY(-3px);
-  box-shadow: 0 16px 48px rgba(94,194,122,0.05);
-}
-.card:hover::before { opacity: 1; }
-.card-icon { font-size: 24px; margin-bottom: 12px; }
-.card h3 { font-size: 14.5px; font-weight: 700; margin-bottom: 6px; }
-.card p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.65; }
-
-@media (max-width: 1024px) {
-  .features-grid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 640px) {
-  .features-grid { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 420px) {
-  .features-grid { grid-template-columns: 1fr; }
-}
-
-
-/* ══════════════════════════════════════════════════
-   benchmarks.css — Performance benchmark cards
-   ══════════════════════════════════════════════════ */
-
-.benchmarks { padding: var(--section-pad) 0; }
-.benchmarks-header { margin-bottom: 48px; }
-.bench-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 18px;
-}
-.bench-card {
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: 14px; padding: 28px; backdrop-filter: blur(12px);
-  transition: all 0.35s ease;
-}
-.bench-card:hover { border-color: var(--accent-border); }
-.bench-config { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-.bench-chip-icon {
-  width: 40px; height: 40px; border-radius: 10px;
-  background: var(--accent-dim); border: 1px solid rgba(94,194,122,0.12);
-  display: flex; align-items: center; justify-content: center; font-size: 18px;
-}
-.bench-config-label h3 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
-.bench-config-label p { font-size: 12px; color: var(--text-dim); }
-.bench-stats { display: flex; flex-direction: column; gap: 14px; }
-.bench-row { display: flex; justify-content: space-between; align-items: center; }
-.bench-row-label { font-size: 13px; color: var(--text-secondary); }
-.bench-row-value { font-size: 13px; font-weight: 700; color: var(--text); font-family: var(--mono); }
-.bench-row-value.highlight { color: var(--accent); }
-.bench-bar-wrap { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 8px; }
-.bench-bar-fill {
-  height: 100%; border-radius: 3px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-light));
-  transition: width 1.2s ease;
-}
-.bench-divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
-.bench-note { font-size: 11.5px; color: var(--text-dim); font-style: italic; margin-top: 12px; }
-
-
-/* ── bottom.css ── */
-/* ══════════════════════════════════════════════════
-   tech.css — Architecture, models, citation
-   ══════════════════════════════════════════════════ */
-
-.tech { padding: var(--section-pad) 0; }
-.tech-header { margin-bottom: 40px; }
-.tech-badges { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 48px; }
-.tech-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 13px; background: var(--accent-dim);
-  border: 1px solid rgba(94,194,122,0.1); border-radius: 18px;
-  font-size: 12.5px; color: var(--text-secondary); font-weight: 600;
-  transition: all 0.3s ease;
-}
-.tech-badge:hover { background: var(--accent-border); color: var(--accent); border-color: rgba(94,194,122,0.3); }
-
-.design-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
-.design-item { padding: 20px 0; border-top: 1px solid var(--border); }
-.design-item h3 { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
-.design-item p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.7; }
-
-
-/* ══════════════════════════════════════════════════
-   models.css — Supported models table
-   ══════════════════════════════════════════════════ */
-
-.models { padding: 0 0 var(--section-pad); }
-.models-header { margin-bottom: 36px; }
-.models-table-wrap { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-.models-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-.models-table thead { background: rgba(26,31,26,0.8); }
-.models-table th {
-  text-align: left; padding: 12px 18px; font-family: var(--mono);
-  font-size: 11px; color: var(--accent); letter-spacing: 1.2px;
-  text-transform: uppercase; font-weight: 600; border-bottom: 1px solid var(--border);
-}
-.models-table td { padding: 12px 18px; color: var(--text-secondary); border-bottom: 1px solid rgba(34,46,34,0.4); }
-.models-table tr:last-child td { border-bottom: none; }
-.models-table tbody tr { transition: background 0.2s; }
-.models-table tbody tr:hover { background: rgba(94,194,122,0.025); }
-.model-name { color: var(--text); font-weight: 700; }
-.model-tag {
-  display: inline-block; padding: 2px 7px; background: var(--accent-dim);
-  border-radius: 4px; font-size: 10px; color: var(--accent); font-weight: 700; margin-left: 6px;
-}
-@media (max-width: 768px) {
-  .models-table-wrap { overflow-x: auto; }
-  .models-table { min-width: 540px; }
-}
-
-
-/* ══════════════════════════════════════════════════
-   citation.css
-   ══════════════════════════════════════════════════ */
-
-.citation { padding: var(--section-pad) 0; }
-.citation-header { margin-bottom: 28px; }
-.citation-header p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin-top: 14px; }
-.bibtex-block {
-  position: relative; background: rgba(16,20,16,0.9);
-  border: 1px solid var(--border); border-radius: 11px;
-  padding: 22px 24px; overflow: hidden;
-}
-.bibtex-block pre {
-  font-family: var(--mono); font-size: 12.5px; line-height: 1.7;
-  color: var(--text-secondary); white-space: pre-wrap; margin: 0;
-}
-.copy-btn {
-  position: absolute; top: 10px; right: 10px;
-  background: var(--accent-dim); border: 1px solid rgba(94,194,122,0.18);
-  border-radius: 7px; padding: 5px 12px; color: var(--text-secondary);
-  font-size: 11.5px; font-weight: 700; cursor: pointer; font-family: var(--font);
-  transition: all 0.3s ease;
-}
-.copy-btn:hover { background: var(--accent-border); color: var(--accent); }
-.copy-btn.copied { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-
-.references { margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--border); }
-.references h3 { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
-.references ul { list-style: none; padding: 0; }
-.references li {
-  font-size: 12.5px; color: var(--text-secondary); line-height: 1.7;
-  padding: 5px 0 5px 14px; position: relative;
-}
-.references li::before {
-  content: ''; position: absolute; left: 0; top: 12px;
-  width: 4px; height: 4px; border-radius: 50%; background: var(--accent); opacity: 0.45;
-}
-
-
-/* ══════════════════════════════════════════════════
-   survey.css — Community survey callout
-   ══════════════════════════════════════════════════ */
-
-.community-survey { padding: var(--section-pad) 0; }
-.survey-banner {
-  display: flex; align-items: center; gap: 40px;
-  padding: 48px; border-radius: 20px;
-  background: linear-gradient(135deg, rgba(94,194,122,0.06) 0%, rgba(26,31,26,0.45) 100%);
-  border: 1px solid rgba(94,194,122,0.12);
-  position: relative; overflow: hidden;
-}
-.survey-banner-glow {
-  position: absolute; top: -60px; right: -60px;
-  width: 200px; height: 200px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(94,194,122,0.06), transparent 70%);
-  pointer-events: none;
-}
-.survey-banner-icon { font-size: 56px; flex-shrink: 0; position: relative; }
-.survey-banner-content { position: relative; flex: 1; }
-.survey-banner-content h2 {
-  font-size: clamp(22px, 3vw, 28px); font-weight: 800;
-  margin-bottom: 10px; letter-spacing: -0.5px;
-}
-.survey-banner-content h2 .accent { color: var(--accent); }
-.survey-banner-content p {
-  font-size: 14.5px; color: var(--text-secondary);
-  line-height: 1.7; margin-bottom: 24px; max-width: 520px;
-}
-.survey-cta-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-.survey-time {
-  font-size: 12.5px; color: var(--text-dim); font-weight: 600;
-  display: flex; align-items: center; gap: 6px;
-}
-@media (max-width: 768px) {
-  .survey-banner { flex-direction: column; text-align: center; padding: 32px 24px; gap: 20px; }
-  .survey-banner-content p { margin: 0 auto 24px; }
-  .survey-cta-row { justify-content: center; }
-}
-
-
-/* ══════════════════════════════════════════════════
-   download.css — Download form
-   ══════════════════════════════════════════════════ */
-
-.download { padding: 60px 0 var(--section-pad); }
-.download-card {
-  padding: 56px 48px; text-align: center;
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: 20px; backdrop-filter: blur(12px);
-}
-.download-card h2 { font-size: clamp(26px, 3.5vw, 34px); font-weight: 800; margin-bottom: 10px; letter-spacing: -0.8px; }
-.download-card > p { font-size: 14.5px; color: var(--text-secondary); margin-bottom: 32px; line-height: 1.7; max-width: 480px; margin-left: auto; margin-right: auto; }
-.download-form-inline {
-  display: flex; gap: 10px; max-width: 520px; margin: 0 auto 20px;
-  flex-wrap: wrap; justify-content: center;
-}
-.download-input {
-  flex: 1; min-width: 160px; padding: 11px 16px;
-  background: rgba(16,20,16,0.85); border: 1px solid var(--border);
-  border-radius: 9px; color: var(--text); font-family: var(--font);
-  font-size: 14px; transition: border-color 0.3s ease; outline: none;
-}
-.download-input:focus { border-color: var(--accent); }
-.download-input::placeholder { color: var(--text-dim); }
-.download-select {
-  flex: 1; min-width: 160px; padding: 11px 16px;
-  background: rgba(16,20,16,0.85); border: 1px solid var(--border);
-  border-radius: 9px; color: var(--text); font-family: var(--font);
-  font-size: 14px; transition: border-color 0.3s ease; outline: none;
-  appearance: none; -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236d826d' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 14px center;
-  cursor: pointer;
-}
-.download-select:focus { border-color: var(--accent); }
-.download-select option { background: var(--bg-elevated); color: var(--text); }
-.download-submit {
-  padding: 11px 24px; background: var(--accent); color: var(--bg);
-  border: none; border-radius: 9px; font-size: 14px; font-weight: 700;
-  font-family: var(--font); transition: all 0.3s ease; white-space: nowrap;
-}
-.download-submit:hover { box-shadow: 0 8px 24px var(--accent-glow); transform: translateY(-1px); }
-.download-note { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
-.download-platforms { display: flex; gap: 20px; justify-content: center; margin-top: 28px; }
-.platform-badge { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-dim); font-weight: 600; }
-.download-success { display: none; padding: 24px 0; }
-.download-success.show { display: block; }
-.download-success-icon { font-size: 40px; margin-bottom: 12px; }
-.download-success h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-.download-success p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; }
-@media (max-width: 600px) {
-  .download-card { padding: 36px 24px; }
-  .download-input { min-width: 100%; }
-}
-
-
-/* ══════════════════════════════════════════════════
-   footer.css
-   ══════════════════════════════════════════════════ */
-
-.footer {
-  padding: 36px 48px; border-top: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 14px;
-}
-.footer-left { display: flex; align-items: center; gap: 10px; }
-.footer-org { display: flex; align-items: center; gap: 8px; }
-.footer-contact { display: flex; align-items: center; }
-.footer-email {
-  font-size: 12.5px; color: var(--text-dim); text-decoration: none;
-  transition: color 0.3s ease;
-}
-.footer-email:hover { color: var(--accent); }
-.footer-text { font-size: 12.5px; color: var(--text-dim); }
-.footer-links { display: flex; gap: 20px; }
-.footer-links a { font-size: 12.5px; color: var(--text-dim); transition: color 0.3s; }
-.footer-links a:hover { color: var(--accent); }
-@media (max-width: 768px) {
-  .footer { padding: 28px 24px; flex-direction: column; text-align: center; }
-}
-
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HabiDATA: camera-trap data, start to finish, offline</title>
+<meta name="description" content="HabiDATA turns a folder of camera-trap images and video into deployment-ready ecological data: detection, species ID, review and analytics, entirely on your own machine.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,300;6..12,400;6..12,600;6..12,700;6..12,800;6..12,900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="Images/habidata-icon.png">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background-color:#0a0d0a; background-image:linear-gradient(to right,#181f18 1px,transparent 1px),linear-gradient(to bottom,#181f18 1px,transparent 1px); background-size:70px 70px; color:#e8f2e8; font-family:'Nunito Sans',system-ui,sans-serif; line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+img { max-width:100%; display:block; }
+a { color:#5ec27a; text-decoration:none; }
+a:hover { color:#8ae8a4; }
+::selection { background:#5ec27a; color:#0a0d0a; }
+input, select, button { font-family:inherit; }
+@keyframes hd-pulse { 0%,100% { opacity:0.35; } 50% { opacity:1; } }
+.wrap { max-width:1240px; margin:0 auto; padding:0 clamp(20px,4vw,40px); }
+nav { display:flex; align-items:center; justify-content:space-between; min-height:88px; padding:16px 0; gap:clamp(14px,2vw,30px); flex-wrap:wrap; }
+.nav-left { display:flex; align-items:center; gap:20px; }
+.nav-logo { display:flex; align-items:center; gap:11px; }
+.nav-logo img { width:34px; height:34px; border-radius:9px; }
+.nav-logo span { font-size:19px; font-weight:800; letter-spacing:0.4px; color:#e8f2e8; }
+.nav-partner { display:flex; align-items:center; padding-left:20px; border-left:1px solid #222e22; }
+.nav-partner img { height:28px; width:auto; object-fit:contain; opacity:0.85; }
+.nav-links { display:flex; align-items:center; gap:clamp(14px,2vw,30px); flex-wrap:wrap; }
+.nav-links a { font-size:13.5px; font-weight:600; color:#a3b8a3; letter-spacing:0.2px; white-space:nowrap; }
+.nav-cta { display:inline-flex; align-items:center; gap:7px; padding:9px 20px; background:#5ec27a !important; color:#0a0d0a !important; border-radius:8px; font-size:13px; font-weight:800; }
+header.hero { padding:76px 0 0; }
+.hero-inner { max-width:820px; min-height:calc(100vh - 164px); display:flex; flex-direction:column; justify-content:center; }
+.hero-badge { display:inline-flex; align-items:center; gap:9px; padding:6px 15px 6px 12px; margin-bottom:30px; background:rgba(94,194,122,0.07); border:1px solid rgba(94,194,122,0.18); border-radius:20px; font-size:12.5px; font-weight:700; color:#a3b8a3; letter-spacing:0.3px; white-space:nowrap; }
+.hero-badge-dot { width:6px; height:6px; border-radius:50%; background:#5ec27a; animation:hd-pulse 2s infinite; }
+.hero-name-row { display:flex; align-items:center; gap:clamp(14px,2.2vw,28px); margin-bottom:20px; }
+.hero-name-row img { width:clamp(52px,8vw,112px); height:clamp(52px,8vw,112px); border-radius:clamp(13px,2vw,26px); flex-shrink:0; }
+.hero-name { font-size:clamp(64px,9.5vw,132px); font-weight:900; line-height:0.94; letter-spacing:-4px; }
+.hero-fullform { font-family:'JetBrains Mono',monospace; font-size:19.5px; color:#6d826d; letter-spacing:0.4px; margin-bottom:26px; }
+.hero-fullform b { color:#a3b8a3; font-weight:700; }
+.hero-tag { font-size:clamp(24px,3vw,34px); font-weight:800; line-height:1.16; letter-spacing:-1px; margin-bottom:22px; text-wrap:balance; }
+.hero-desc { font-size:17px; color:#a3b8a3; max-width:640px; line-height:1.6; margin-bottom:38px; text-wrap:pretty; }
+.hero-actions { display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
+.btn-primary { display:inline-flex; align-items:center; gap:10px; padding:15px 30px; background:#5ec27a; color:#0a0d0a; border-radius:10px; font-size:15px; font-weight:800; }
+.btn-secondary { display:inline-flex; align-items:center; gap:10px; padding:15px 28px; background:transparent; color:#e8f2e8; border:1.5px solid #2a382a; border-radius:10px; font-size:15px; font-weight:700; }
+.hero-free { font-size:13px; color:#6d826d; font-weight:600; }
+.partners { padding:74px 0 0; }
+.partners p { text-align:center; font-size:12px; color:#6d826d; font-weight:700; letter-spacing:1.6px; text-transform:uppercase; margin-bottom:30px; }
+.partners-row { display:flex; align-items:center; justify-content:center; gap:clamp(28px,4vw,56px); flex-wrap:wrap; }
+.partners-row img { height:88px; object-fit:contain; opacity:0.72; }
+section.block { padding:110px 0 0; }
+.section-label { display:block; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5ec27a; letter-spacing:2.5px; text-transform:uppercase; font-weight:600; margin-bottom:16px; }
+.section-title { font-size:clamp(30px,3.4vw,42px); font-weight:800; letter-spacing:-1px; line-height:1.14; margin-bottom:52px; }
+.section-title .muted { color:#a3b8a3; font-weight:400; }
+.why-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr)); gap:16px; }
+.why-card { background:rgba(19,24,19,0.6); border:1px solid #222e22; border-radius:14px; padding:26px 22px 24px; transition:border-color 0.2s ease; }
+.why-card:hover { border-color:#ff9a3c; }
+.why-icon { width:40px; height:40px; border-radius:11px; background:rgba(94,194,122,0.08); border:1px solid rgba(94,194,122,0.16); display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
+.why-card h3 { font-size:15px; font-weight:800; letter-spacing:-0.2px; margin-bottom:7px; }
+.why-card p { font-size:13px; color:#a3b8a3; line-height:1.62; text-wrap:pretty; }
+.wf-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr)); gap:clamp(24px,3vw,40px); align-items:center; margin-bottom:26px; }
+.wf-text { padding:8px 12px; }
+.wf-step-row { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+.wf-step-num { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color:#5ec27a; letter-spacing:2px; }
+.wf-step-line { flex:1; height:1px; background:#222e22; }
+.wf-text h3 { font-size:26px; font-weight:800; letter-spacing:-0.7px; line-height:1.18; margin-bottom:12px; }
+.wf-text p { font-size:15px; color:#a3b8a3; line-height:1.65; margin-bottom:20px; text-wrap:pretty; }
+.wf-tags { display:flex; flex-wrap:wrap; gap:7px; }
+.wf-tag { padding:5px 12px; background:rgba(94,194,122,0.06); border:1px solid rgba(94,194,122,0.14); border-radius:20px; font-size:11.5px; font-weight:700; color:#a3b8a3; white-space:nowrap; }
+.wf-shot { border:1px solid #222e22; border-radius:13px; overflow:hidden; background:#131813; box-shadow:0 24px 60px rgba(0,0,0,0.45); }
+.wf-shot-bar { display:flex; align-items:center; gap:7px; padding:9px 13px; border-bottom:1px solid #222e22; background:#0f130f; }
+.wf-shot-bar span:not(.wf-shot-label) { width:8px; height:8px; border-radius:50%; background:#2a382a; }
+.wf-shot-label { margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#6d826d; }
+.wf-slides { position:relative; aspect-ratio:1919/1079; background:#131813; }
+.wf-slide { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; animation:wf-fade 20s infinite; }
+.wf-caption-stack { position:relative; min-height:98px; margin-bottom:20px; }
+.wf-slide-text { position:absolute; inset:0; margin-bottom:0 !important; opacity:0; animation:wf-fade 20s infinite; }
+@keyframes wf-fade { 0% { opacity:0; } 3% { opacity:1; } 17% { opacity:1; } 20% { opacity:0; } 100% { opacity:0; } }
+@keyframes wf-fade3 { 0% { opacity:0; } 4% { opacity:1; } 29% { opacity:1; } 33% { opacity:0; } 100% { opacity:0; } }
+@keyframes wf-fade2 { 0% { opacity:0; } 6% { opacity:1; } 44% { opacity:1; } 50% { opacity:0; } 100% { opacity:0; } }
+.bench-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr)); gap:18px; }
+.bench-card { background:rgba(19,24,19,0.6); border:1px solid #222e22; border-radius:14px; padding:26px 26px 24px; }
+.bench-name { font-size:15px; font-weight:800; letter-spacing:-0.2px; margin-bottom:3px; }
+.bench-spec { font-size:12px; color:#6d826d; margin-bottom:22px; }
+.bench-time-row { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:9px; font-size:13px; color:#a3b8a3; }
+.bench-time { font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:600; }
+.bench-bar { height:6px; background:#1b241b; border-radius:3px; overflow:hidden; margin-bottom:18px; }
+.bench-bar-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#3c8a50,#8ae8a4); }
+.bench-r { display:flex; justify-content:space-between; font-size:13px; color:#a3b8a3; padding-top:12px; border-top:1px solid #1b241b; }
+.bench-r span:last-child { font-family:'JetBrains Mono',monospace; font-weight:600; color:#e8f2e8; }
+.dl-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr)); gap:20px; align-items:stretch; }
+.dl-card-main { padding:44px 42px; background:linear-gradient(150deg, rgba(94,194,122,0.08) 0%, rgba(19,24,19,0.6) 60%); border:1px solid rgba(94,194,122,0.16); border-radius:18px; }
+.dl-card-main h2 { font-size:clamp(26px,3vw,34px); font-weight:800; letter-spacing:-0.8px; line-height:1.15; margin-bottom:12px; }
+.dl-card-main > p { font-size:14.5px; color:#a3b8a3; line-height:1.65; margin-bottom:28px; max-width:440px; }
+.dl-form { display:flex; flex-direction:column; gap:10px; max-width:460px; }
+.dl-row { display:flex; gap:10px; }
+.dl-row input, .dl-row select { flex:1; min-width:0; padding:12px 15px; background:rgba(10,13,10,0.7); border:1px solid #222e22; border-radius:9px; color:#e8f2e8; font-size:14px; outline:none; }
+.dl-row input:focus, .dl-row select:focus { border-color:#5ec27a; }
+.dl-form button { margin-top:6px; padding:14px 24px; background:#5ec27a; color:#0a0d0a; border:none; border-radius:9px; font-size:14.5px; font-weight:800; cursor:pointer; }
+.dl-form button:hover { background:#8ae8a4; }
+.dl-note { font-size:12px; color:#6d826d; margin-top:14px; max-width:440px; line-height:1.6; }
+.dl-card-side { padding:40px 38px; background:#131813; border:1px solid #222e22; border-radius:18px; display:flex; flex-direction:column; }
+.dl-card-side h3 { font-size:22px; font-weight:800; letter-spacing:-0.5px; line-height:1.2; margin-bottom:12px; }
+.dl-card-side p { font-size:14px; color:#a3b8a3; line-height:1.65; margin-bottom:24px; }
+.dl-survey-btn { display:inline-flex; align-items:center; justify-content:center; gap:9px; padding:13px 22px; border:1.5px solid rgba(94,194,122,0.4); border-radius:9px; font-size:14px; font-weight:700; color:#5ec27a; }
+.dl-survey-btn:hover { background:rgba(94,194,122,0.08); border-color:#5ec27a; }
+.dl-survey-note { font-size:12px; color:#6d826d; margin-top:12px; text-align:center; }
+.team-grid1 { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr)); gap:18px; margin-bottom:18px; }
+.team-card { padding:28px 30px; background:#131813; border:1px solid #222e22; border-radius:14px; }
+.team-card .name-row { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+.team-link { display:inline-flex; color:#6d826d; }
+.team-link:hover { color:#5ec27a; }
+.team-card .name { font-size:17px; font-weight:800; margin-bottom:4px; }
+.team-card .role { font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5ec27a; letter-spacing:0.6px; margin-bottom:12px; }
+.team-card p { font-size:13.5px; color:#a3b8a3; line-height:1.65; }
+.team-grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr)); gap:18px; }
+.info-card { padding:24px 26px; background:rgba(19,24,19,0.55); border:1px solid #222e22; border-radius:14px; }
+.info-card .lbl { font-family:'JetBrains Mono',monospace; font-size:11px; color:#5ec27a; letter-spacing:1.4px; text-transform:uppercase; margin-bottom:10px; }
+.info-card p { font-size:13.5px; color:#a3b8a3; line-height:1.65; }
+.info-card a { border-bottom:1px solid rgba(94,194,122,0.4); }
+.thanks-card { padding:26px 30px; background:rgba(19,24,19,0.55); border:1px solid #222e22; border-radius:14px; margin-bottom:18px; }
+.thanks-card .lbl { font-family:'JetBrains Mono',monospace; font-size:11px; color:#5ec27a; letter-spacing:1.4px; text-transform:uppercase; margin-bottom:10px; }
+.thanks-card p { font-size:13.5px; color:#a3b8a3; line-height:1.65; margin-bottom:18px; }
+.thanks-row { display:flex; flex-wrap:wrap; gap:10px 32px; }
+.thanks-item { font-size:15.5px; color:#e8f2e8; font-weight:700; }
+.thanks-item span { display:block; font-size:11.5px; color:#6d826d; font-weight:500; margin-top:2px; }
+footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.footer-brand { display:flex; align-items:center; gap:10px; }
+.footer-brand img { width:26px; height:26px; border-radius:7px; opacity:0.8; }
+.footer-brand span { font-size:12.5px; color:#6d826d; }
+.footer-links { display:flex; gap:22px; flex-wrap:wrap; }
+.footer-links a { font-size:12.5px; color:#6d826d; }
+@media (max-width:760px){ .nav-links a:not(.nav-cta){ display:none; } }
+</style>
 </head>
-
 <body>
+<div class="wrap">
 
-  <!-- ═══════════════════════════════════════════
-       NAVIGATION
-       ═══════════════════════════════════════════ -->
-  <nav class="nav" id="nav">
-    <a href="#hero" class="nav-logo">
-      <span class="nav-logo-icon">🐾</span>
-      <span class="nav-logo-text">Habi<span>DATA</span></span>
+<nav>
+  <div class="nav-left">
+    <a href="#top" class="nav-logo">
+      <img src="Images/habidata-icon.png" alt="">
+      <span>Habi<span style="color:#5ec27a;">DATA</span></span>
     </a>
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="nav-links" id="navLinks">
-      <a href="#highlights" class="nav-link">Highlights</a>
-      <a href="#walkthrough" class="nav-link">Workflow</a>
-      <!-- <a href="#features" class="nav-link">Features</a> -->
-      <a href="#benchmarks" class="nav-link">Performance</a>
-      <a href="#tech" class="nav-link">Architecture</a>
-      <a href="#community-survey" class="nav-link">Survey</a>
-      <a href="#download" class="nav-cta">Download</a>
-      <!-- <a href="#citation" class="nav-link">Cite</a> -->
+    <a href="https://www.thehabitatstrust.org/" target="_blank" rel="noopener" class="nav-partner"><img src="Images/THT.png" alt="The Habitats Trust"></a>
+  </div>
+  <div class="nav-links">
+    <a href="#why">Why HabiDATA</a>
+    <a href="#workflow">Workflow</a>
+    <a href="#performance">Performance</a>
+    <a href="#team">Who builds it</a>
+    <a href="#download" class="nav-cta">Get the app</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="hero-badge-dot"></span>Soft launch · v2.0 · offline desktop app</div>
+    <div class="hero-name-row">
+      <img src="Images/habidata-icon.png" alt="">
+      <h1 class="hero-name">Habi<span style="color:#5ec27a;">DATA</span></h1>
     </div>
-  </nav>
-
-
-  <!-- ═══════════════════════════════════════════
-       HERO
-       ═══════════════════════════════════════════ -->
-  <section class="hero" id="hero">
-    <div class="hero-glow"></div>
-    <div class="hero-content">
-      <div class="hero-badge">
-        <span class="hero-badge-dot"></span>
-        Offline &middot; Desktop-Native &middot; Cross-Platform
-      </div>
-      <h1>Habi<span class="hero-gradient">DATA</span></h1>
-      <p class="hero-subtitle">
-        One stop platform for <strong>Habi</strong>tat-centric <strong>D</strong>ata <strong>A</strong>cquisition, <strong>T</strong>ransform & <strong>A</strong>nalytics 
-      </p>
-      <p class="hero-full-form">
-        Built with conservationists, translating data into field decisions.
-      </p>
-      <div class="hero-buttons">
-        <a href="#download" class="btn-primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Download
-        </a>
-        <a href="#walkthrough" class="btn-secondary">See How It Works</a>
-      </div>
-      <!-- <a href="https://thehabitatstrust.org" target="_blank" rel="noopener" class="hero-org-credit"> -->
-        <!-- <span>Developed at</span>
-        <img src="images/logos/THT.png" alt="The Habitats Trust" /> -->
-      <!-- </a> -->
+    <p class="hero-fullform"><b>Habi</b>tat-centric <b>D</b>ata <b>A</b>cquisition, <b>T</b>ransform &amp; <b>A</b>nalytics</p>
+    <h2 class="hero-tag">Camera-trap data, segregate, verify and analyze,<br><span style="color:#5ec27a;">on your own machine.</span></h2>
+    <p class="hero-desc">Every feature is built around how teams actually work, on the ground and back in the office. It comes out of a year of conversations and feedback with different organizations running real large scale surveys. Next: more tools to pull deeper ecological insight out of camera-trap data, with AI and a human always in the loop.</p>
+    <div class="hero-actions">
+      <a href="#download" class="btn-primary">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Request the download
+      </a>
+      <span class="hero-free">Free for research &amp; non-profit conservation</span>
     </div>
-    <div class="scroll-indicator">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6d826d" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </div>
+</header>
+
+<section class="block" id="why">
+  <span class="section-label">Why HabiDATA</span>
+  <h2 class="section-title">Built around how field teams actually work.<br><span class="muted">Not around a data-sharing agreement.</span></h2>
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0114.08 0"></path><path d="M8.5 16.03a6 6 0 017 0"></path><path d="M12 20h.01"></path><path d="M2 2l20 20"></path></svg></div>
+      <h3>Offline by default</h3>
+      <p>Every model runs on the machine in front of you. No uploads, no account, no data-sharing agreement to negotiate first.</p>
     </div>
-  </section>
-
-
-  <!-- ═══════════════════════════════════════════
-       TRUSTED PARTNERS
-       ═══════════════════════════════════════════ -->
-  <section class="partners" id="partners">
-    <div class="partners-label">Trusted by research institutions and conservation organisations</div>
-    <div class="logo-row">
-      <img class="logo-item" src="images/logos/THT.png" alt="The Habitats Trust" />
-      <img class="logo-item" src="images/logos/Kaziranga.png" alt="Kaziranga National Park" />
-      <img class="logo-item" src="images/logos/HNF.png" alt="Holematthi Nature Foundation" />
-      <img class="logo-item" src="images/logos/TGT.png" alt="The Grasslands Trust" />
-      <img class="logo-item" src="images/logos/KANS.png" alt="Kenneth Anderson Nature Society" />
-      
+    <div class="why-card">
+      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"></path></svg></div>
+      <h3>The reviewer is in charge</h3>
+      <p>Smart Verify clears the confident detections; a person decides the rest. Boxes, categories and species are all correctable.</p>
     </div>
-  </section>
-
-
-  <!-- ═══════════════════════════════════════════
-       HIGHLIGHTS — 4×2 icon grid
-       ═══════════════════════════════════════════ -->
-  <section class="highlights" id="highlights">
-    <div class="container">
-      <div class="highlights-header fade-up">
-        <span class="section-label">Why HabiDATA</span>
-        <h2 class="section-title">Everything you need for camera-trap analysis.<br /><span class="muted">From detection to deployment sheet.</span></h2>
-      </div>
-      <div class="highlights-grid">
-        <!-- <div class="hl-card fade-up stagger-1">
-          <div class="hl-icon">🖥</div>
-          <h3>Desktop-Native</h3>
-          <p>Built with PySide6/Qt6 for a responsive, native desktop experience</p>
-        </div> -->
-        <div class="hl-card fade-up stagger-2">
-          <div class="hl-icon">📡</div>
-          <h3>Offline</h3>
-          <p>No internet required after installation. All inference runs locally</p>
-        </div>
-        <div class="hl-card fade-up stagger-3">
-          <div class="hl-icon">🎞</div>
-          <h3>Video Support</h3>
-          <p>Process both images and videos with configurable frame extraction</p>
-        </div>
-        <div class="hl-card fade-up stagger-4">
-          <div class="hl-icon">⚡</div>
-          <h3>GPU Acceleration</h3>
-          <p>Auto-detects NVIDIA CUDA and Apple Silicon MPS for faster inference</p>
-        </div>
-        <div class="hl-card fade-up stagger-1">
-          <div class="hl-icon">✏️</div>
-          <h3>Human-in-the-Loop</h3>
-          <p>Active-learning strategy to verify model predictions efficiently</p>
-        </div>
-        <div class="hl-card fade-up stagger-2">
-          <div class="hl-icon">🐄</div>
-          <h3>Livestock Filtering</h3>
-          <p>Binary classifier separates livestock from wildlife automatically</p>
-        </div>
-        <div class="hl-card fade-up stagger-1">
-          <div class="hl-icon">🎯</div>
-          <h3>India-First AI Models</h3>
-          <p>Livestock classifier trained on Indian reserve data. Species classifier for Indian fauna — coming soon</p>
-        </div>
-        <div class="hl-card fade-up stagger-3">
-          <div class="hl-icon">🔄</div>
-          <h3>Collaborator Merge</h3>
-          <p>Merge verification databases from multiple annotators seamlessly</p>
-        </div>
-        <div class="hl-card fade-up stagger-4">
-          <div class="hl-icon">📊</div>
-          <h3>Publication-Ready</h3>
-          <p>Export charts, deployment sheets, and results as publication-grade PNGs</p>
-        </div>
-      </div>
+    <div class="why-card">
+      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 00-8 8c0 5.4 7 11.5 7.3 11.8a1 1 0 001.4 0C13 21.5 20 15.4 20 10a8 8 0 00-8-8z"></path><path d="M12 7v6M9 10h6"></path></svg></div>
+      <h3>Active learning speeds up verification</h3>
+      <p>Active learning algorithms prioritize the most informative samples for review, reducing the time and effort required for verification.</p>
     </div>
-  </section>
-
-
-  <!-- ═══════════════════════════════════════════
-       VISUAL WALKTHROUGH (screenshot + description)
-       ═══════════════════════════════════════════ -->
-  <section class="walkthrough" id="walkthrough">
-    <div class="container">
-      <div class="walkthrough-header fade-up">
-        <span class="section-label">How It Works</span>
-        <h2 class="section-title">From folder to finished analysis.<br /><span class="muted">Four steps, one application.</span></h2>
-      </div>
-
-      <div class="walk-grid">
-        <!-- Step 1 -->
-        <div class="walk-card fade-up stagger-1">
-          <div class="walk-card-img">
-            <span class="walk-step-badge">Step 01</span>
-            <img src="images/screenshots/home.png" alt="HabiDATA Home Dashboard" loading="lazy" />
-          </div>
-          <div class="walk-card-body">
-            <h3>Select Your Project</h3>
-            <p>Point at your camera-trap folder. View dataset counts, detection results, and database status. Navigate to any module from here.</p>
-            <div class="walk-tags">
-              <span class="walk-tag">📁 Folder picker</span>
-              <span class="walk-tag">💾 SQLite DB</span>
-              <span class="walk-tag">🔄 Merge DBs</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Step 2 -->
-        <div class="walk-card fade-up stagger-2">
-          <div class="walk-card-img">
-            <span class="walk-step-badge">Step 02</span>
-            <img src="images/screenshots/detection.png" alt="HabiDATA Run Detection" loading="lazy" />
-          </div>
-          <div class="walk-card-body">
-            <h3>Run Detection</h3>
-            <p>Choose model weights, set confidence, enable the livestock classifier. Results stream as an interactive category distribution chart.</p>
-            <div class="walk-tags">
-              <span class="walk-tag">🧠 MegaDetector v6</span>
-              <span class="walk-tag">🐄 Livestock</span>
-              <span class="walk-tag">🎞 Video</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Step 3 -->
-        <div class="walk-card fade-up stagger-3">
-          <div class="walk-card-img">
-            <span class="walk-step-badge">Step 03</span>
-            <img src="images/screenshots/edit.png" alt="HabiDATA Edit & Tag" loading="lazy" />
-          </div>
-          <div class="walk-card-body">
-            <h3>Verify & Tag</h3>
-            <p>Review detections with bounding-box overlays. Active-learning prioritises uncertain predictions. Assign species and batch-verify.</p>
-            <div class="walk-tags">
-              <span class="walk-tag">✏️ Active learning</span>
-              <span class="walk-tag">🏷 Species</span>
-              <span class="walk-tag">✅ Batch verify</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Step 4 -->
-        <div class="walk-card fade-up stagger-4">
-          <div class="walk-card-img">
-            <span class="walk-step-badge">Step 04</span>
-            <img src="images/screenshots/analysis-timeline.png" alt="HabiDATA Analysis" loading="lazy" />
-          </div>
-          <div class="walk-card-body">
-            <h3>Analyse & Export</h3>
-            <p>Capture timelines, activity histograms, deployment sheets. Detect camera gaps automatically. Export as CSV, Excel, or publication-ready PNGs.</p>
-            <div class="walk-tags">
-              <span class="walk-tag">📊 Timeline</span>
-              <span class="walk-tag">🕐 Activity</span>
-              <span class="walk-tag">📋 Deployment</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="why-card">
+      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M7 16l4-8 4 5 5-7"></path></svg></div>
+      <h3>Ecology, not just counts</h3>
+      <p>Trap-nights, RAI per 100 trap-nights, diel activity, species overlap and a deployment sheet you can hand to a report.</p>
     </div>
-  </section>
-
-
-  <!-- ═══════════════════════════════════════════
-       FEATURES — compact cards
-       ═══════════════════════════════════════════ -->
-  <!-- <section class="features" id="features">
-    <div class="container">
-      <div class="features-header fade-up">
-        <span class="section-label">Capabilities</span>
-        <h2 class="section-title">Comprehensive camera-trap processing.<br /><span class="muted">In a single application.</span></h2>
-      </div>
-      <div class="features-grid">
-        <div class="card fade-up stagger-1">
-          <div class="card-icon">🔍</div>
-          <h3>AI Detection</h3>
-          <p>MegaDetector v6 (YOLOv10-nano) with custom weights support, GPU acceleration, and auto batch-sizing.</p>
-        </div>
-        <div class="card fade-up stagger-2">
-          <div class="card-icon">✏️</div>
-          <h3>Smart Verification</h3>
-          <p>Active-learning-driven prioritisation of uncertain predictions for efficient human-in-the-loop review.</p>
-        </div>
-        <div class="card fade-up stagger-3">
-          <div class="card-icon">🐄</div>
-          <h3>Livestock Classifier</h3>
-          <p>EfficientNet-B0 binary classifier separates livestock from wildlife so you focus on target species.</p>
-        </div>
-        <div class="card fade-up stagger-4">
-          <div class="card-icon">📊</div>
-          <h3>Analytics</h3>
-          <p>Capture timelines, activity histograms, camera-gap detection, and deployment-sheet export as PNGs.</p>
-        </div>
-        <div class="card fade-up stagger-5">
-          <div class="card-icon">📂</div>
-          <h3>Smart Segregation</h3>
-          <p>Auto-sort into category or species folders. Copy/move modes, livestock sub-splitting, mass annotation.</p>
-        </div>
-      </div>
+    <div class="why-card">
+      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l5.55-2.78A1 1 0 0122 8.1v7.8a1 1 0 01-1.45.88L15 14"></path><path d="M3 6h10a2 2 0 012 2v8a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2z"></path></svg></div>
+      <h3>Images and video together</h3>
+      <p>Clips are reviewed as clips, at an inference rate you choose, with the labels you gave them protected on re-runs.</p>
     </div>
-  </section> -->
-
-
-  <!-- ═══════════════════════════════════════════
-       PERFORMANCE BENCHMARKS
-       ═══════════════════════════════════════════ -->
-  <section class="benchmarks" id="benchmarks">
-    <div class="container">
-      <div class="benchmarks-header fade-up">
-        <span class="section-label">Performance</span>
-        <h2 class="section-title">Tested across hardware configurations.<br /><span class="muted">Built for real-world throughput.</span></h2>
-      </div>
-      <div class="bench-grid">
-        <div class="bench-card fade-up stagger-1">
-          <div class="bench-config">
-            <div class="bench-chip-icon">💻</div>
-            <div class="bench-config-label"><h3>Intel Core i5 (CPU Only)</h3><p>12th Gen · 16 GB RAM · No GPU</p></div>
-          </div>
-          <div class="bench-stats">
-            <div class="bench-row"><span class="bench-row-label">10,000 images</span><span class="bench-row-value">~3 hours</span></div>
-            <div class="bench-bar-wrap"><div class="bench-bar-fill" style="width: 18%;"></div></div>
-            <hr class="bench-divider">
-            <div class="bench-row"><span class="bench-row-label">Throughput</span><span class="bench-row-value">~0.8 img/sec</span></div>
-            <div class="bench-row"><span class="bench-row-label">Batch size</span><span class="bench-row-value">8 (auto)</span></div>
-          </div>
-          <!-- <p class="bench-note">Suitable for small field deployments under 5,000 images.</p> -->
-        </div>
-        <div class="bench-card fade-up stagger-2">
-          <div class="bench-config">
-            <div class="bench-chip-icon">🍎</div>
-            <div class="bench-config-label"><h3>Apple M2</h3><p>MacBook Air · 16 GB Unified </p></div>
-          </div>
-          <div class="bench-stats">
-            <div class="bench-row"><span class="bench-row-label">10,000 images</span><span class="bench-row-value highlight">~10 minutes</span></div>
-            <div class="bench-bar-wrap"><div class="bench-bar-fill" style="width: 52%;"></div></div>
-            <hr class="bench-divider">
-            <div class="bench-row"><span class="bench-row-label">Throughput</span><span class="bench-row-value">~16 img/sec</span></div>
-            <div class="bench-row"><span class="bench-row-label">Batch size</span><span class="bench-row-value">8 (auto)</span></div>
-          </div>
-          <!-- <p class="bench-note">Efficient for moderate datasets. No external GPU required.</p> -->
-        </div>
-        <div class="bench-card fade-up stagger-3">
-          <div class="bench-config">
-            <div class="bench-chip-icon">⚡</div>
-            <div class="bench-config-label"><h3>Intel i7 + NVIDIA RTX 4060</h3><p>13th Gen · 32 GB RAM </p></div>
-          </div>
-          <div class="bench-stats">
-            <div class="bench-row"><span class="bench-row-label">10,000 images</span><span class="bench-row-value highlight">~8 minutes</span></div>
-            <div class="bench-bar-wrap"><div class="bench-bar-fill" style="width: 95%;"></div></div>
-            <hr class="bench-divider">
-            <div class="bench-row"><span class="bench-row-label">Throughput</span><span class="bench-row-value">~20 img/sec</span></div>
-            <div class="bench-row"><span class="bench-row-label">Batch size</span><span class="bench-row-value">8 (auto)</span></div>
-          </div>
-          <!-- <p class="bench-note">Recommended for large-scale surveys exceeding 50,000 images.</p> -->
-        </div>
-      </div>
+    <div class="why-card">
+      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9h6v6H9z"></path><path d="M4 8V6a2 2 0 012-2h2M16 4h2a2 2 0 012 2v2M20 16v2a2 2 0 01-2 2h-2M8 20H6a2 2 0 01-2-2v-2"></path><path d="M1 12h3M20 12h3M12 1v3M12 20v3"></path></svg></div>
+      <h3>Uses the GPU if there is one</h3>
+      <p>CUDA and Apple Silicon detected automatically, batch size chosen for you, CPU-only still finishes the survey.</p>
     </div>
-  </section>
-
-
-  <!-- ═══════════════════════════════════════════
-       ARCHITECTURE
-       ═══════════════════════════════════════════ -->
-  <section class="tech" id="tech">
-    <div class="container">
-      <div class="tech-header fade-up">
-        <span class="section-label">Architecture</span>
-        <h2 class="section-title">Purpose-built for field conditions.<br /><span class="muted">Engineered for reliability.</span></h2>
-      </div>
-      <div class="tech-badges fade-up">
-        <span class="tech-badge">🐍 Python 3.10+</span>
-        <!-- <span class="tech-badge">🖥 PySide6 / Qt6</span> -->
-        <span class="tech-badge">🔬 MegaDetector v6</span>
-        <span class="tech-badge">⚡ YOLOv10</span>
-        <span class="tech-badge">🧠 EfficientNet-B0</span>
-        <span class="tech-badge">💾 SQLite WAL</span>
-        <!-- <span class="tech-badge">📊 Pandas</span>
-        <span class="tech-badge">📈 Matplotlib</span>
-        <span class="tech-badge">🎞 OpenCV</span> -->
-      </div>
-      <div class="design-grid fade-up">
-        <div class="design-item">
-          <h3>Offline-First</h3>
-          <p>All inference runs locally. Images never leave your machine — essential for field stations with limited connectivity and data-sharing restrictions.</p>
-        </div>
-        <div class="design-item">
-          <h3>Crash-Safe Persistence</h3>
-          <p>SQLite in WAL mode ensures atomic batch writes even on external drives. The canonical JSON is rebuilt only after inference completes successfully.</p>
-        </div>
-        <div class="design-item">
-          <h3>Cross-Platform</h3>
-          <p>Runs on Windows, macOS, and Linux. Pre-built binaries for Windows. macOS users benefit from MPS-accelerated inference on Apple Silicon.</p>
-        </div>
-      </div>
+    <div class="why-card">
+      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8L22 12l-4 4"></path><path d="M2 12h20"></path><path d="M6 16l-4-4 4-4"></path></svg></div>
+      <h3>Made for shared review</h3>
+      <p>Hand a collaborator a copy of the database, get it back, merge it. Verification survives moving between machines.</p>
     </div>
-  </section>
+    <div class="why-card">
+      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg></div>
+      <h3>Archival export for analysis</h3>
+      <p>A verified survey packages into a standards-based archive, Camtrap DP included, ready to upload to a repository or hand off to R, GBIF or your own analysis pipeline.</p>
+    </div></div>
+</section>
 
 
-  <!-- ═══════════════════════════════════════════
-       SUPPORTED MODELS
-       ═══════════════════════════════════════════ -->
-  <!-- <section class="models" id="models">
-    <div class="container">
-      <div class="models-header fade-up">
-        <span class="section-label">Supported Models</span>
-        <h2 class="section-title">Use our defaults or bring your own.</h2>
+<section class="block" id="workflow">
+  <span class="section-label">The workflow</span>
+  <h2 class="section-title">From a folder of photos to a deployment sheet.<br><span class="muted">Four screens, one application.</span></h2>
+  
+    <div class="wf-row">
+      <div class="wf-text">
+        <div class="wf-step-row"><span class="wf-step-num">STEP 01</span><span class="wf-step-line"></span></div>
+        <h3>Open the survey folder</h3>
+        <div class="wf-caption-stack">
+          <p class="wf-slide-text" style="animation:wf-fade2 8s infinite; animation-delay:0s">HabiDATA reads your folder tree as the hierarchy it already is (round, beat, grid, camera) and tells you what is on disk, what has been processed, and what is still unverified, per medium.</p>
+          <p class="wf-slide-text" style="animation:wf-fade2 8s infinite; animation-delay:4s">Export to global standard formats, spin up a collaborative database your whole team edits and merges back later, or hand a PI a read-only analysis database for inference alone.</p>
+        </div>
+        <div class="wf-tags"><span class="wf-tag">Folder roles</span><span class="wf-tag">Verification progress</span><span class="wf-tag">Per-grid breakdown</span></div>
       </div>
-      <div class="models-table-wrap fade-up">
-        <table class="models-table">
-          <thead><tr><th>Model</th><th>Architecture</th><th>Classes</th><th>Notes</th></tr></thead>
-          <tbody>
-            <tr><td><span class="model-name">MegaDetector v6</span><span class="model-tag">Default</span></td><td>YOLOv10-nano</td><td>animal, human, vehicle</td><td>Fast, lightweight (Beery et al., 2019)</td></tr>
-            <tr><td><span class="model-name">Custom YOLO Weights</span></td><td>Ultralytics-compatible</td><td>User-defined</td><td>Load any .pt file via model picker</td></tr>
-            <tr><td><span class="model-name">Livestock Classifier</span></td><td>EfficientNet-B0</td><td>livestock / non-livestock</td><td>Binary classifier on animal crops</td></tr>
-            <tr><td><span class="model-name">SpeciesNet</span></td><td>Ensemble (external)</td><td>Species-level</td><td>CLI bridge integration (experimental)</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section> -->
-
-
-  <!-- ═══════════════════════════════════════════
-       COMMUNITY SURVEY
-       ═══════════════════════════════════════════ -->
-  <section class="community-survey" id="community-survey">
-    <div class="container">
-      <div class="survey-banner fade-up">
-        <div class="survey-banner-glow"></div>
-        <div class="survey-banner-icon">📋</div>
-        <div class="survey-banner-content">
-          <h2>Help us build HabiDATA <span class="accent">for you.</span></h2>
-          <p>We are actively developing features based on real-world workflows and field requirements. Your input on camera-trap practices, data volumes, and operational challenges directly shapes what we build next.</p>
-          <div class="survey-cta-row">
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSeyUPuRmfNl2SZSA_K4gWACJoViXT5uH26CcUBXQqa0bmsjwA/viewform?usp=header" target="_blank" rel="noopener" class="btn-primary">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-              Take the Community Survey
-            </a>
-            <span class="survey-time">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              5–7 minutes
-            </span>
-          </div>
+      <div class="wf-shot">
+        <div class="wf-shot-bar"><span></span><span></span><span></span><span class="wf-shot-label">Home · project overview</span></div>
+        <div class="wf-slides">
+          <img class="wf-slide" style="animation:wf-fade2 8s infinite; animation-delay:0s" src="Images/home.png" alt="HabiDATA Home dashboard: administrative hierarchy, image and video counts, verification progress, capture activity and per-grid table" loading="lazy">
+          <img class="wf-slide" style="animation:wf-fade2 8s infinite; animation-delay:4s" src="Images/export.png" alt="HabiDATA Export screen: standard format export, collaborative database and analysis-only database options" loading="lazy">
+        </div>
+      </div></div>
+    <div class="wf-row">
+      <div class="wf-shot">
+        <div class="wf-shot-bar"><span></span><span></span><span></span><span class="wf-shot-label">Run detection</span></div>
+        <div class="wf-slides">
+          <img class="wf-slide" style="animation:wf-fade2 8s infinite; animation-delay:0s" src="Images/run.png" alt="HabiDATA Run detection screen: model and threshold settings beside a category donut and per-species counts" loading="lazy">
+          <img class="wf-slide" style="animation:wf-fade2 8s infinite; animation-delay:4s" src="Images/segregate.png" alt="HabiDATA segregate screen sorting detections into folders by category" loading="lazy">
         </div>
       </div>
-    </div>
-  </section>
-
-
-  <!-- ═══════════════════════════════════════════
-       DOWNLOAD
-       ═══════════════════════════════════════════ -->
-  <section class="download" id="download">
-    <div class="container" style="max-width:720px;">
-      <div class="download-card fade-up">
-        <h2>Download HabiDATA</h2>
-        <p>Runs entirely offline after installation. No account or internet connection required.</p>
-        <div id="downloadForm">
-          <div class="download-form-inline">
-            <input type="text" class="download-input" id="dlName" placeholder="Your name" required />
-            <input type="email" class="download-input" id="dlEmail" placeholder="Email address" required />
-          </div>
-          <div class="download-form-inline">
-            <input type="text" class="download-input" id="dlInstitution" placeholder="Institution / Organisation" required />
-            <select class="download-select" id="dlOS">
-              <option value="" disabled selected>Select OS</option>
-              <option value="Windows">🪟 Windows</option>
-              <option value="macOS">🍎 macOS</option>
-              <option value="Linux">🐧 Linux</option>
-            </select>
-          </div>
-          <div class="download-form-inline" style="justify-content:center; margin-top:8px;">
-            <button class="download-submit" onclick="handleDownload()">Request Download Link</button>
-          </div>
-          <p class="download-note">The download link will be shared to your email within 24 hours. We collect this information solely to understand our user base and keep you informed of updates.</p>
+      <div class="wf-text">
+        <div class="wf-step-row"><span class="wf-step-num">STEP 02</span><span class="wf-step-line"></span></div>
+        <h3>Run detection and species ID</h3>
+        <div class="wf-caption-stack">
+          <p class="wf-slide-text" style="animation:wf-fade2 8s infinite; animation-delay:0s">MegaDetector animals, human, vehicles and blanks; an optional classifier names the species on each animal crop. Progress streams live and a paused run keeps its place.</p>
+          <p class="wf-slide-text" style="animation:wf-fade2 8s infinite; animation-delay:4s">Your folder structure stays exactly as it is on disk, copy or move the segregated images either way. Any edit to a file's location is tracked, so it never breaks the analysis or the deployment sheet downstream.</p>
         </div>
-        <div class="download-success" id="downloadSuccess">
-          <div class="download-success-icon">✅</div>
-          <h3>Thank you!</h3>
-          <p>The download link for <strong id="dlOSConfirm"></strong> will be sent to <strong id="dlEmailConfirm"></strong> within 24 hours. While you wait, consider filling out our <a href="https://docs.google.com/forms/d/e/1FAIpQLSeyUPuRmfNl2SZSA_K4gWACJoViXT5uH26CcUBXQqa0bmsjwA/viewform?usp=header" target="_blank" rel="noopener" style="color:var(--accent); text-decoration:underline;">community survey</a> — it helps us build a better tool for everyone.</p>
+        <div class="wf-tags"><span class="wf-tag">MegaDetector v6</span><span class="wf-tag">AddaxAI · SpeciesNet</span><span class="wf-tag">Pause and resume</span></div>
+      </div></div>
+    <div class="wf-row">
+      <div class="wf-text">
+        <div class="wf-step-row"><span class="wf-step-num">STEP 03</span><span class="wf-step-line"></span></div>
+        <h3>Verify and tag what matters</h3>
+        <div class="wf-caption-stack">
+          <p class="wf-slide-text" style="animation:wf-fade3 12s infinite; animation-delay:0s">A dense review grid with category dots and verification flags. Number keys assign species, batch actions fix a whole selection, and nothing is written until you press Save.</p>
+          <p class="wf-slide-text" style="animation:wf-fade3 12s infinite; animation-delay:4s">Missed an animal the model didn't box? Add it straight from the species list, no drawing a new region by hand.</p>
+          <p class="wf-slide-text" style="animation:wf-fade3 12s infinite; animation-delay:8s">Edit one frame of a clip and Smart Propagate carries the change across it, tracking the same instance through every frame.</p>
         </div>
-        <div class="download-platforms">
-          <span class="platform-badge">🪟 Windows</span>
-          <span class="platform-badge">🍎 macOS</span>
-          <span class="platform-badge">🐧 Linux</span>
+        <div class="wf-tags"><span class="wf-tag">Species hotkeys</span><span class="wf-tag">Smart verify</span><span class="wf-tag">Box editing</span></div>
+      </div>
+      <div class="wf-shot">
+        <div class="wf-shot-bar"><span></span><span></span><span></span><span class="wf-shot-label">Edit & tag</span></div>
+        <div class="wf-slides">
+          <img class="wf-slide" style="animation:wf-fade3 12s infinite; animation-delay:0s" src="Images/edit.png" alt="HabiDATA review grid with camera-trap thumbnails, species hotkey bar and batch verify controls" loading="lazy">
+          <img class="wf-slide" style="animation:wf-fade3 12s infinite; animation-delay:4s" src="Images/edit_box.png" alt="HabiDATA edit screen adding a box from the species list" loading="lazy">
+          <img class="wf-slide" style="animation:wf-fade3 12s infinite; animation-delay:8s" src="Images/edit_video.png" alt="HabiDATA video edit screen propagating a box edit across frames" loading="lazy">
+        </div>
+      </div></div>
+    <div class="wf-row">
+      <div class="wf-shot">
+        <div class="wf-shot-bar"><span></span><span></span><span></span><span class="wf-shot-label">Analysis · RAI</span></div>
+        <div class="wf-slides">
+          <img class="wf-slide" style="animation-delay:0s" src="Images/timeline.png" alt="HabiDATA Timeline screen showing capture activity by hour and by day per species" loading="lazy">
+          <img class="wf-slide" style="animation-delay:4s" src="Images/overlap.png" alt="HabiDATA Overlap screen showing diel activity overlap between species pairs" loading="lazy">
+          <img class="wf-slide" style="animation-delay:8s" src="Images/rai.png" alt="HabiDATA Analysis screen showing relative abundance index bars per species with trap-night effort notes" loading="lazy">
+          <img class="wf-slide" style="animation-delay:12s" src="Images/diversity.png" alt="HabiDATA Diversity screen showing species diversity indices per grid" loading="lazy">
+          <img class="wf-slide" style="animation-delay:16s" src="Images/deployment_sheet.png" alt="HabiDATA deployment sheet ready for export" loading="lazy">
         </div>
       </div>
-    </div>
-  </section>
+      <div class="wf-text">
+        <div class="wf-step-row"><span class="wf-step-num">STEP 04</span><span class="wf-step-line"></span></div>
+        <h3>Get numbers you can publish</h3>
+        <div class="wf-caption-stack">
+          <p class="wf-slide-text" style="animation-delay:0s">Capture activity by hour and by day, so you can see when each species is actually active.</p>
+          <p class="wf-slide-text" style="animation-delay:4s">Diel activity overlap between species pairs, with the Δ estimator separating a real pattern from small-sample noise.</p>
+          <p class="wf-slide-text" style="animation-delay:8s">Relative abundance per 100 trap-nights, at any level of the hierarchy, with the independence interval you choose.</p>
+          <p class="wf-slide-text" style="animation-delay:12s">Species diversity indices per grid or round, so sites are comparable on more than a raw species count.</p>
+          <p class="wf-slide-text" style="animation-delay:16s">A deployment sheet ready to hand to a report, effort and all, with an honest note when a camera's clock made an estimate unsafe.</p>
+        </div>
+        <div class="wf-tags"><span class="wf-tag">RAI & trap-nights</span><span class="wf-tag">Activity overlap</span><span class="wf-tag">Excel export</span></div>
+      </div></div>
+</section>
 
-    <!-- ═══════════════════════════════════════════
-       CITATION
-       ═══════════════════════════════════════════ -->
-  <!-- <section class="citation" id="citation">
-    <div class="container" style="max-width:780px;">
-      <div class="citation-header fade-up">
-        <span class="section-label">Citation</span>
-        <h2 class="section-title">Using HabiDATA in your research?</h2>
-        <p>Proper attribution helps us sustain development and reach more conservation practitioners worldwide.</p>
+<section class="block" id="performance">
+  <span class="section-label">Performance</span>
+  <h2 class="section-title" style="margin-bottom:16px;">It runs on the laptop you already have.<br><span class="muted">A GPU makes it quicker, not possible.</span></h2>
+  <p style="font-size:15px; color:#a3b8a3; max-width:620px; margin-bottom:44px;">Measured on 10,000 images with MegaDetector v6.</p>
+  <div class="bench-grid">
+    <div class="bench-card">
+      <div class="bench-name">Intel Core i7 · CPU only</div>
+      <div class="bench-spec">14C/20T · 32GB RAM</div>
+      <div class="bench-time-row"><span>10,000 images</span><span class="bench-time" style="color:#e8f2e8">1h 7m</span></div>
+      <div class="bench-bar"><div class="bench-bar-fill" style="width:34%"></div></div>
+      <div class="bench-r"><span>Throughput</span><span>2.5 img/sec</span></div>
+    </div>
+    <div class="bench-card">
+      <div class="bench-name">Apple M2</div>
+      <div class="bench-spec">MacBook Air · 16 GB unified</div>
+      <div class="bench-time-row"><span>10,000 images</span><span class="bench-time" style="color:#5ec27a">38 min</span></div>
+      <div class="bench-bar"><div class="bench-bar-fill" style="width:61%"></div></div>
+      <div class="bench-r"><span>Throughput</span><span>4.5 img/sec</span></div>
+    </div>
+    <div class="bench-card">
+      <div class="bench-name">Intel i7 + RTX 4060 Laptop</div>
+      <div class="bench-spec">8 GB VRAM · 32GB RAM</div>
+      <div class="bench-time-row"><span>10,000 images</span><span class="bench-time" style="color:#5ec27a">24 min</span></div>
+      <div class="bench-bar"><div class="bench-bar-fill" style="width:95%"></div></div>
+      <div class="bench-r"><span>Throughput</span><span>7 img/sec</span></div>
+    </div></div>
+</section>
+
+<section class="block" id="download">
+  <div class="dl-grid">
+    <div class="dl-card-main">
+      <h2>Get HabiDATA</h2>
+      <p>We are hand-sending builds during the soft launch, so we can help you set up and hear what breaks. Join the waiting list, we start shipping from September 4th.</p>
+      <form class="dl-form" id="dl-form">
+        <div class="dl-row">
+          <input type="text" name="name" placeholder="Your name" required>
+          <input type="email" name="email" placeholder="Email address" required>
+        </div>
+        <div class="dl-row">
+          <input type="text" name="institution" placeholder="Institution / organisation">
+          <select name="os"><option value="Windows">Windows</option><option value="macOS">macOS</option></select>
+        </div>
+        <button type="submit" id="dl-submit">Request the download link</button>
+        <p id="dl-error" style="display:none; color:#e08a6a; font-size:13.5px; font-weight:700;">Something went wrong, please try again or email us directly.</p>
+      </form>
+      <div id="dl-success" style="display:none; align-items:center; gap:12px; padding:18px 20px; background:rgba(94,194,122,0.08); border:1px solid rgba(94,194,122,0.24); border-radius:10px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <div>
+          <div style="font-size:15px; font-weight:800; color:#e8f2e8; margin-bottom:2px;">Thank you!</div>
+          <div style="font-size:13.5px; color:#a3b8a3;">We've got your details, we'll email you the download link shortly.</div>
+        </div>
       </div>
-      <div class="bibtex-block fade-up">
-        <button class="copy-btn" id="copyBtn" onclick="copyBibtex()">Copy BibTeX</button>
-        <pre id="bibtexCode">@software{habidata2025,
-  title     = {HabiDATA: Habitat-centric Data
-               Acquisition, Transform and Analytics},
-  author    = {Sharat Agarwal, Santhosh SL},
-  year      = {2025},
-  note      = {Desktop application for camera-trap
-               data processing}
-}</pre>
-      </div> -->
-      <!-- <div class="references fade-up">
-        <h3>Related Work</h3>
-        <ul>
-          <li>Beery, S., Morris, D., & Yang, S. (2019). Efficient pipeline for camera trap image review. <em>arXiv:1907.06772</em>.</li>
-          <li>Steenweg, R., Hebblewhite, M., Kays, R., et al. (2017). Scaling-up camera traps. <em>Ecology and Evolution</em>, 7(3), 915–925.</li>
-          <li>Wearn, O. R. & Glover-Kapfer, P. (2019). Snap happy: camera traps are an effective sampling tool. <em>Royal Society Open Science</em>, 6(3).</li>
-          <li>Schneider, S. et al. (2020). Three critical factors affecting automated image species recognition. <em>Ecology and Evolution</em>.</li>
-          <li>Norouzzadeh, M. S. et al. (2021). A deep active learning system for species identification. <em>Methods in Ecology and Evolution</em>.</li>
-        </ul>
-      </div> -->
+      <p class="dl-note">Windows and macOS builds. We use your details only to understand who is using HabiDATA and to tell you about updates.</p>
+      <script>
+        (function() {
+          var form = document.getElementById('dl-form');
+          var btn = document.getElementById('dl-submit');
+          var success = document.getElementById('dl-success');
+          var error = document.getElementById('dl-error');
+          var ENDPOINT = 'https://script.google.com/macros/s/AKfycbw2Akct1P5tGpsFS_9PKdSnCgkWQU5sLVExqAJNkUUZQFDWlenS35MvSW_h9NQ9zUQ/exec';
+          form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            error.style.display = 'none';
+            fetch(ENDPOINT, {
+              method: 'POST',
+              mode: 'no-cors',
+              body: new URLSearchParams(new FormData(form))
+            }).then(function() {
+              form.style.display = 'none';
+              success.style.display = 'flex';
+            }).catch(function() {
+              btn.disabled = false;
+              btn.textContent = 'Request the download link';
+              error.style.display = 'block';
+            });
+          });
+        })();
+      </script>
     </div>
-  </section>
-
-
-  <!-- ═══════════════════════════════════════════
-       FOOTER
-       ═══════════════════════════════════════════ -->
-  <footer class="footer">
-    <div class="footer-left">
-      <span style="font-size:30px;">🐾</span>
-      <span class="footer-text">HabiDATA · 2025</span>
+    <div class="dl-card-side">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:20px;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      <h3>Tell us what to build next</h3>
+      <p>The roadmap is set by what field teams tell us: how many cameras, how much data, what your reports have to say, and which part of the current process wastes the most time.</p>
+      <div style="flex:1;"></div>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSeyUPuRmfNl2SZSA_K4gWACJoViXT5uH26CcUBXQqa0bmsjwA/viewform?usp=header" target="_blank" rel="noopener" class="dl-survey-btn">Take the community survey</a>
+      <p class="dl-survey-note">5–7 minutes · no account needed</p>
     </div>
-    <div class="footer-contact">
-      <a href="mailto:sharat29ag@gmail.com" class="footer-email">📧 sharat29ag@gmail.com</a>
+  </div>
+</section>
+
+<section class="block" id="team">
+  <span class="section-label">Who builds it</span>
+  <h2 class="section-title" style="margin-bottom:44px;">A small team, built with the people using it.</h2>
+  <div class="team-grid1">
+    <div class="team-card">
+      <div class="name-row">
+        <div class="name">Sharat Agarwal</div>
+        <a class="team-link" href="https://scholar.google.com/citations?user=b_mRBSMAAAAJ&hl=en" target="_blank" rel="noopener" aria-label="Sharat Agarwal profile link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"></path></svg></a>
+      </div>
+      <div class="role">COMPUTER VISION  RESEARCHER · PLATFORM DEVELOPER </div>
+      <p>His research is in active learning and human-in-the-loop annotation (published at ECCV, WACV and a NeurIPS workshop), but what he actually wanted was to build a tool around it. HabiDATA is that tool: a model and an expert rarely find the same image hard, and the interface has to be built around that difference, not just around a better algorithm. This is only the first version of that idea, with a lot more still to build from here.</p>
     </div>
-    <div class="footer-links">
-      <a href="#community-survey">Survey</a>
-      <a href="#download">Download</a>
+    <div class="team-card">
+      <div class="name-row">
+        <div class="name">Santhosh Pavagada</div>
+        <a class="team-link" href="https://in.linkedin.com/in/santhosh-pavagada-a63348a" target="_blank" rel="noopener" aria-label="Santhosh Pavagada profile link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"></path></svg></a>
+      </div>
+      <div class="role">LEAD T4C @ The Habitat Trust</div>
+      <p>Keeps the tool honest against real survey practice: effort, independence intervals and what a deployment sheet has to carry.</p>
     </div>
-  </footer>
+  </div>
+  <div class="thanks-card">
+    <div class="lbl">Tested by</div>
+    <p>Early builds went out to people in the field long before this launch, their feedback across every version is a big part of why the tool works the way it does.</p>
+    <div class="thanks-row">
+      <div class="thanks-item">Sanjay Gubbi<span>Holematthi Nature Foundation</span></div>
+      <div class="thanks-item">Sunil Harsana<span>Conservationist, South Haryana Aravalli</span></div>
+      <div class="thanks-item">Aditya Joshi<span>Wildlife Conservation Trust</span></div>
+      <div class="thanks-item">Mihir Godbole<span>The Grassland Trust</span></div>
+      <div class="thanks-item">Kumar Paudel<span>Greenhood</span></div>
+    </div>
+  </div>
+  <div class="team-grid2">
+    <div class="info-card"><div class="lbl">Licence</div><p>Free for academic research, teaching and non-profit conservation. Commercial use needs a separate written licence.</p></div>
+    <div class="info-card"><div class="lbl">Standing on</div><p>MegaDetector (Beery et al., 2019), AddaxAI and Google SpeciesNet classifiers, and the Δ overlap estimator of Ridout &amp; Linkie (2009).</p></div>
+    <div class="info-card"><div class="lbl">Talk to us</div><p>Setup help, or a survey you think will break it: <a href="mailto:sharatag.work@gmail.com">sharatag.work@gmail.com</a></p></div>
+  </div>
+</section>
 
-  <!-- JavaScript -->
-  <script>
-/* ══════════════════════════════════════════════════
-   main.js — All site interactivity
-   ══════════════════════════════════════════════════ */
+<footer>
+  <div class="footer-brand"><img src="Images/habidata-icon.png" alt=""><span>HabiDATA · v2.0 soft launch · 2026 · Made in India</span></div>
+  <div class="footer-links">
+    <a href="#workflow">Workflow</a>
+    <a href="#performance">Performance</a>
+    <a href="#download">Download</a>
+    <a href="mailto:sharatag.work@gmail.com">sharatag.work@gmail.com</a>
+  </div>
+</footer>
 
-// ── Nav scroll effect ──
-const nav = document.getElementById('nav');
-window.addEventListener('scroll', () => {
-  nav.classList.toggle('scrolled', window.scrollY > 40);
-});
-
-// ── Mobile nav toggle ──
-const toggle = document.getElementById('navToggle');
-const links = document.getElementById('navLinks');
-toggle.addEventListener('click', () => links.classList.toggle('open'));
-document.querySelectorAll('.nav-link, .nav-cta').forEach(a =>
-  a.addEventListener('click', () => links.classList.remove('open'))
-);
-
-// ── Scroll-triggered fade-up animations ──
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      observer.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.1 });
-document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-
-// ── Copy BibTeX ──
-function copyBibtex() {
-  const code = document.getElementById('bibtexCode').textContent;
-  const btn = document.getElementById('copyBtn');
-  navigator.clipboard.writeText(code).then(() => {
-    btn.textContent = 'Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = 'Copy BibTeX';
-      btn.classList.remove('copied');
-    }, 2000);
-  });
-}
-
-// ── Download form ──
-function handleDownload() {
-  const name = document.getElementById('dlName').value.trim();
-  const email = document.getElementById('dlEmail').value.trim();
-  const inst = document.getElementById('dlInstitution').value.trim();
-  const os = document.getElementById('dlOS').value;
-
-  // Validate all fields
-  let hasError = false;
-  if (!name) { document.getElementById('dlName').style.borderColor = '#ff5f57'; hasError = true; }
-  if (!email) { document.getElementById('dlEmail').style.borderColor = '#ff5f57'; hasError = true; }
-  if (!inst) { document.getElementById('dlInstitution').style.borderColor = '#ff5f57'; hasError = true; }
-  if (!os) { document.getElementById('dlOS').style.borderColor = '#ff5f57'; hasError = true; }
-
-  if (hasError) {
-    setTimeout(() => {
-      document.querySelectorAll('.download-input, .download-select').forEach(i => i.style.borderColor = '');
-    }, 2000);
-    return;
-  }
-
-  // Disable button while submitting
-  const btn = document.querySelector('.download-submit');
-  btn.textContent = 'Submitting...';
-  btn.disabled = true;
-
-  // ── Send to Google Sheets via Apps Script ──
-  // SETUP INSTRUCTIONS:
-  // 1. Create a Google Sheet with columns: Timestamp | Name | Email | Institution | OS
-  // 2. Go to Extensions → Apps Script
-  // 3. Paste this code:
-  //
-  //    function doPost(e) {
-  //      var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  //      var data = JSON.parse(e.postData.contents);
-  //      sheet.appendRow([
-  //        new Date(),
-  //        data.name,
-  //        data.email,
-  //        data.institution,
-  //        data.os
-  //      ]);
-  //      return ContentService
-  //        .createTextOutput(JSON.stringify({result: 'success'}))
-  //        .setMimeType(ContentService.MimeType.JSON);
-  //    }
-  //
-  // 4. Deploy → New Deployment → Web App → Execute as: Me, Access: Anyone
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqzmZIK_EwOqWnydNPFBkbUXiCzK4xZJyfViLJfzbH5gHfvcaO8S0qn7CIaRA3Dv3J/exec';
-
-  const payload = { name, email, institution: inst, os };
-
-  fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-  .then(() => {
-    showSuccess(email, os);
-  })
-  .catch((err) => {
-    console.error('Submission error:', err);
-    showSuccess(email, os);
-  });
-}
-
-function showSuccess(email, os) {
-  document.getElementById('dlEmailConfirm').textContent = email;
-  document.getElementById('dlOSConfirm').textContent = os;
-  document.getElementById('downloadForm').style.display = 'none';
-  document.getElementById('downloadSuccess').classList.add('show');
-}
-
-// Allow Enter key to submit download form
-document.querySelectorAll('.download-input, .download-select').forEach(input => {
-  input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') handleDownload();
-  });
-});
-
-  </script>
+</div>
 </body>
 </html>
