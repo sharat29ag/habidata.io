@@ -119,6 +119,8 @@ section.block { padding:110px 0 0; }
 .info-card .lbl { font-family:'JetBrains Mono',monospace; font-size:11px; color:#5ec27a; letter-spacing:1.4px; text-transform:uppercase; margin-bottom:10px; }
 .info-card p { font-size:13.5px; color:#a3b8a3; line-height:1.65; }
 .info-card a { border-bottom:1px solid rgba(94,194,122,0.4); }
+.info-card ul { font-size:13.5px; color:#a3b8a3; line-height:1.65; padding-left:18px; }
+.info-card li { margin-bottom:2px; }
 .thanks-card { padding:26px 30px; background:rgba(19,24,19,0.55); border:1px solid #222e22; border-radius:14px; margin-bottom:18px; }
 .thanks-card .lbl { font-family:'JetBrains Mono',monospace; font-size:11px; color:#5ec27a; letter-spacing:1.4px; text-transform:uppercase; margin-bottom:10px; }
 .thanks-card p { font-size:13.5px; color:#a3b8a3; line-height:1.65; margin-bottom:18px; }
@@ -306,7 +308,7 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
 <section class="block" id="performance">
   <span class="section-label">Performance</span>
   <h2 class="section-title" style="margin-bottom:16px;">It runs on the laptop you already have.<br><span class="muted">A GPU makes it quicker, not possible.</span></h2>
-  <p style="font-size:15px; color:#a3b8a3; max-width:620px; margin-bottom:44px;">Measured on 10,000 images with MegaDetector v6.</p>
+  <!-- <p style="font-size:15px; color:#a3b8a3; max-width:620px; margin-bottom:44px;">Measured on 10,000 images with MegaDetector v6.</p> -->
   <div class="bench-grid">
     <div class="bench-card">
       <div class="bench-name">Intel Core i7 · CPU only</div>
@@ -428,8 +430,12 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
     </div>
   </div>
   <div class="team-grid2">
-    <div class="info-card"><div class="lbl">Licence</div><p>Free for academic research, teaching and non-profit conservation. Commercial use needs a separate written licence.</p></div>
-    <div class="info-card"><div class="lbl">Standing on</div><p>MegaDetector (Beery et al., 2019), AddaxAI and Google SpeciesNet classifiers, and the Δ overlap estimator of Ridout &amp; Linkie (2009).</p></div>
+    <div class="info-card"><div class="lbl">Standing on</div><ul>
+      <li>MegaDetector (Beery et al., 2019)</li>
+      <li>AddaxAI, Central India species classifier</li>
+      <li>Google SpeciesNet classifier</li>
+      <li>The Δ overlap estimator of Ridout &amp; Linkie (2009)</li>
+    </ul></div>
     <div class="info-card"><div class="lbl">Talk to us</div><p>Setup help, or a survey you think will break it: <a href="mailto:sharatag.work@gmail.com">sharatag.work@gmail.com</a></p></div>
   </div>
 </section>
