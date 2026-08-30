@@ -307,7 +307,7 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
 
 <section class="block" id="performance">
   <span class="section-label">Performance</span>
-  <h2 class="section-title" style="margin-bottom:16px;">It runs on the laptop you already have.<br><span class="muted">A GPU makes it quicker, not just possible. </span></h2>
+  <h2 class="section-title" style="margin-bottom:16px;">It runs on the laptop you already have.<br><span class="muted">A GPU makes it quicker, not possible.</span></h2>
   <!-- <p style="font-size:15px; color:#a3b8a3; max-width:620px; margin-bottom:44px;">Measured on 10,000 images with MegaDetector v6.</p> -->
   <div class="bench-grid">
     <div class="bench-card">
@@ -451,5 +451,19 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
 </footer>
 
 </div>
+<script>
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a[href^="#"]');
+    if (!link) return;
+    var id = link.getAttribute('href').slice(1);
+    var target = id ? document.getElementById(id) : null;
+    e.preventDefault();
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+</script>
 </body>
 </html>
