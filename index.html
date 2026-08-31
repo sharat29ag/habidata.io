@@ -20,7 +20,7 @@ a:hover { color:#8ae8a4; }
 input, select, button { font-family:inherit; }
 @keyframes hd-pulse { 0%,100% { opacity:0.35; } 50% { opacity:1; } }
 .wrap { max-width:1240px; margin:0 auto; padding:0 clamp(20px,4vw,40px); }
-nav { display:flex; align-items:center; justify-content:space-between; min-height:88px; padding:16px 0; gap:clamp(14px,2vw,30px); flex-wrap:wrap; }
+nav { display:flex; align-items:center; justify-content:space-between; min-height:88px; padding:16px clamp(20px,4vw,40px); gap:clamp(14px,2vw,30px); flex-wrap:wrap; width:100%; box-sizing:border-box; }
 .nav-left { display:flex; align-items:center; gap:20px; }
 .nav-logo { display:flex; align-items:center; gap:11px; }
 .nav-logo img { width:34px; height:34px; border-radius:9px; }
@@ -50,15 +50,15 @@ header.hero { padding:76px 0 0; }
 .partners-row { display:flex; align-items:center; justify-content:center; gap:clamp(28px,4vw,56px); flex-wrap:wrap; }
 .partners-row img { height:88px; object-fit:contain; opacity:0.72; }
 section.block { padding:110px 0 0; }
-.section-label { display:block; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5ec27a; letter-spacing:2.5px; text-transform:uppercase; font-weight:600; margin-bottom:16px; }
+.section-label { display:block; font-family:'JetBrains Mono',monospace; font-size:13.5px; color:#5ec27a; letter-spacing:2.5px; text-transform:uppercase; font-weight:600; margin-bottom:16px; }
 .section-title { font-size:clamp(30px,3.4vw,42px); font-weight:800; letter-spacing:-1px; line-height:1.14; margin-bottom:52px; }
 .section-title .muted { color:#a3b8a3; font-weight:400; }
-.why-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr)); gap:16px; }
+.why-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr)); gap:16px; }
 .why-card { background:rgba(19,24,19,0.6); border:1px solid #222e22; border-radius:14px; padding:26px 22px 24px; transition:border-color 0.2s ease; }
 .why-card:hover { border-color:#ff9a3c; }
 .why-icon { width:40px; height:40px; border-radius:11px; background:rgba(94,194,122,0.08); border:1px solid rgba(94,194,122,0.16); display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
-.why-card h3 { font-size:15px; font-weight:800; letter-spacing:-0.2px; margin-bottom:7px; }
-.why-card p { font-size:13px; color:#a3b8a3; line-height:1.62; text-wrap:pretty; }
+.why-card h3 { font-size:16px; font-weight:800; letter-spacing:-0.2px; margin-bottom:7px; }
+.why-card p { font-size:14px; color:#a3b8a3; line-height:1.62; text-wrap:pretty; }
 .wf-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr)); gap:clamp(24px,3vw,40px); align-items:center; margin-bottom:26px; }
 .wf-text { padding:8px 12px; }
 .wf-step-row { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
@@ -137,8 +137,6 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
 </style>
 </head>
 <body>
-<div class="wrap">
-
 <nav>
   <div class="nav-left">
     <a href="#top" class="nav-logo">
@@ -155,6 +153,8 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
     <a href="#download" class="nav-cta">Get the app</a>
   </div>
 </nav>
+
+<div class="wrap">
 
 <header class="hero" id="top">
   <div class="hero-inner">
@@ -183,17 +183,17 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
     <div class="why-card">
       <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0114.08 0"></path><path d="M8.5 16.03a6 6 0 017 0"></path><path d="M12 20h.01"></path><path d="M2 2l20 20"></path></svg></div>
       <h3>Offline by default</h3>
-      <p>Every model runs on the machine in front of you. No uploads, no account, no data-sharing agreement to negotiate first.</p>
+      <p>No uploads, no account, no cloud. Every model runs entirely on the machine in front of you.</p>
     </div>
     <div class="why-card">
-      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"></path></svg></div>
-      <h3>The reviewer is in charge</h3>
-      <p>Smart Verify clears the confident detections; a person decides the rest. Boxes, categories and species are all correctable.</p>
+      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9h6v6H9z"></path><path d="M4 8V6a2 2 0 012-2h2M16 4h2a2 2 0 012 2v2M20 16v2a2 2 0 01-2 2h-2M8 20H6a2 2 0 01-2-2v-2"></path><path d="M1 12h3M20 12h3M12 1v3M12 20v3"></path></svg></div>
+      <h3>Global classifiers integrated</h3>
+      <p>MegaDetector and species classifiers built in, ready to run. Optimized for speed, a GPU makes it faster, not just possible.</p>
     </div>
     <div class="why-card">
-      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 00-8 8c0 5.4 7 11.5 7.3 11.8a1 1 0 001.4 0C13 21.5 20 15.4 20 10a8 8 0 00-8-8z"></path><path d="M12 7v6M9 10h6"></path></svg></div>
-      <h3>Active learning speeds up verification</h3>
-      <p>Active learning algorithms prioritize the most informative samples for review, reducing the time and effort required for verification.</p>
+      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg></div>
+      <h3>Non-linear by design</h3>
+      <p>Bring in your data at whatever stage it's already in: raw images, segregated folders, or old deployment sheets for analysis.</p>
     </div>
     <div class="why-card">
       <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M7 16l4-8 4 5 5-7"></path></svg></div>
@@ -201,24 +201,14 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
       <p>Trap-nights, RAI per 100 trap-nights, diel activity, species overlap and a deployment sheet you can hand to a report.</p>
     </div>
     <div class="why-card">
-      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l5.55-2.78A1 1 0 0122 8.1v7.8a1 1 0 01-1.45.88L15 14"></path><path d="M3 6h10a2 2 0 012 2v8a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2z"></path></svg></div>
-      <h3>Images and video together</h3>
-      <p>Clips are reviewed as clips, at an inference rate you choose, with the labels you gave them protected on re-runs.</p>
-    </div>
-    <div class="why-card">
-      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9h6v6H9z"></path><path d="M4 8V6a2 2 0 012-2h2M16 4h2a2 2 0 012 2v2M20 16v2a2 2 0 01-2 2h-2M8 20H6a2 2 0 01-2-2v-2"></path><path d="M1 12h3M20 12h3M12 1v3M12 20v3"></path></svg></div>
-      <h3>Uses the GPU if there is one</h3>
-      <p>CUDA and Apple Silicon detected automatically, batch size chosen for you, CPU-only still finishes the survey.</p>
-    </div>
-    <div class="why-card">
       <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8L22 12l-4 4"></path><path d="M2 12h20"></path><path d="M6 16l-4-4 4-4"></path></svg></div>
-      <h3>Made for shared review</h3>
+      <h3>Verify data as a team</h3>
       <p>Hand a collaborator a copy of the database, get it back, merge it. Verification survives moving between machines.</p>
     </div>
     <div class="why-card">
-      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg></div>
-      <h3>Archival export for analysis</h3>
-      <p>A verified survey packages into a standards-based archive, Camtrap DP included, ready to upload to a repository or hand off to R, GBIF or your own analysis pipeline.</p>
+      <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 00-8 8c0 5.4 7 11.5 7.3 11.8a1 1 0 001.4 0C13 21.5 20 15.4 20 10a8 8 0 00-8-8z"></path><path d="M12 7v6M9 10h6"></path></svg></div>
+      <h3>Active learning speeds up verification</h3>
+      <p>Active learning algorithms prioritize the most informative samples for review, reducing the time and effort required for verification.</p>
     </div></div>
 </section>
 
