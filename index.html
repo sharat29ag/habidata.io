@@ -42,7 +42,7 @@ header.hero { padding:76px 0 0; }
 .hero-name-row { display:flex; align-items:center; gap:clamp(14px,2.2vw,28px); margin-bottom:20px; }
 .hero-name-row img { width:clamp(52px,8vw,112px); height:clamp(52px,8vw,112px); border-radius:clamp(13px,2vw,26px); flex-shrink:0; }
 .hero-name { font-size:clamp(64px,9.5vw,132px); font-weight:900; line-height:0.94; letter-spacing:-4px; }
-.hero-fullform { font-family:'JetBrains Mono',monospace; font-size:19.5px; color:#6d826d; letter-spacing:0.4px; margin-bottom:26px; }
+.hero-fullform { font-family:'JetBrains Mono',monospace; font-size:21.5px; color:#6d826d; letter-spacing:0.4px; margin-bottom:26px; }
 .hero-fullform b { color:#a3b8a3; font-weight:700; }
 .hero-tag { font-size:clamp(24px,3vw,34px); font-weight:800; line-height:1.16; letter-spacing:-1px; margin-bottom:22px; text-wrap:balance; }
 .hero-desc { font-size:17px; color:#a3b8a3; max-width:640px; line-height:1.6; margin-bottom:38px; text-wrap:pretty; }
@@ -57,7 +57,7 @@ header.hero { padding:76px 0 0; }
 section.block { padding:110px 0 0; }
 .section-label { display:block; font-family:'JetBrains Mono',monospace; font-size:13.5px; color:#5ec27a; letter-spacing:2.5px; text-transform:uppercase; font-weight:600; margin-bottom:16px; }
 .section-title { font-size:clamp(30px,3.4vw,42px); font-weight:800; letter-spacing:-1px; line-height:1.14; margin-bottom:52px; }
-.section-title .muted { color:#a3b8a3; font-weight:400; }
+.section-title .muted { color:#a3b8a3; font-weight:400; font-size:clamp(28px,calc(3.4vw - 2px),40px); }
 .why-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr)); gap:16px; }
 .why-card { background:rgba(19,24,19,0.6); border:1px solid #222e22; border-radius:14px; padding:26px 22px 24px; transition:border-color 0.2s ease; }
 .why-card:hover { border-color:#ff9a3c; }
@@ -73,17 +73,19 @@ section.block { padding:110px 0 0; }
 .wf-text p { font-size:15px; color:#a3b8a3; line-height:1.65; margin-bottom:20px; text-wrap:pretty; }
 .wf-tags { display:flex; flex-wrap:wrap; gap:7px; }
 .wf-tag { padding:5px 12px; background:rgba(94,194,122,0.06); border:1px solid rgba(94,194,122,0.14); border-radius:20px; font-size:11.5px; font-weight:700; color:#a3b8a3; white-space:nowrap; }
+.wf-tags .wf-tag { cursor:pointer; transition:border-color 0.25s ease, background-color 0.25s ease, color 0.25s ease; }
+.wf-tags .wf-tag:hover { border-color:rgba(255,154,60,0.5); }
+.wf-tags .wf-tag.active { border-color:#ff9a3c; background:rgba(255,154,60,0.16); color:#e8f2e8; }
 .wf-shot { border:1px solid #222e22; border-radius:13px; overflow:hidden; background:#131813; box-shadow:0 24px 60px rgba(0,0,0,0.45); }
 .wf-shot-bar { display:flex; align-items:center; gap:7px; padding:9px 13px; border-bottom:1px solid #222e22; background:#0f130f; }
 .wf-shot-bar span:not(.wf-shot-label) { width:8px; height:8px; border-radius:50%; background:#2a382a; }
 .wf-shot-label { margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#6d826d; }
 .wf-slides { position:relative; aspect-ratio:1919/1079; background:#131813; }
-.wf-slide { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; animation:wf-fade 20s infinite; }
-.wf-caption-stack { position:relative; min-height:98px; margin-bottom:20px; }
-.wf-slide-text { position:absolute; inset:0; margin-bottom:0 !important; opacity:0; animation:wf-fade 20s infinite; }
-@keyframes wf-fade { 0% { opacity:0; } 3% { opacity:1; } 17% { opacity:1; } 20% { opacity:0; } 100% { opacity:0; } }
-@keyframes wf-fade3 { 0% { opacity:0; } 4% { opacity:1; } 29% { opacity:1; } 33% { opacity:0; } 100% { opacity:0; } }
-@keyframes wf-fade2 { 0% { opacity:0; } 6% { opacity:1; } 44% { opacity:1; } 50% { opacity:0; } 100% { opacity:0; } }
+.wf-slide { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 0.7s ease; }
+.wf-slide.active { opacity:1; }
+.wf-caption-stack { position:relative; min-height:24px; margin-bottom:20px; }
+.wf-slide-text { position:absolute; top:0; left:0; right:0; margin-bottom:0 !important; opacity:0; transition:opacity 0.5s ease; }
+.wf-slide-text.active { opacity:1; }
 .bench-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr)); gap:18px; }
 .bench-card { background:rgba(19,24,19,0.6); border:1px solid #222e22; border-radius:14px; padding:26px 26px 24px; }
 .bench-name { font-size:15px; font-weight:800; letter-spacing:-0.2px; margin-bottom:3px; }
@@ -169,8 +171,8 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
       <h1 class="hero-name">Habi<span style="color:#5ec27a;">DATA</span></h1>
     </div>
     <p class="hero-fullform"><b>Habi</b>tat-centric <b>D</b>ata <b>A</b>cquisition, <b>T</b>ransform &amp; <b>A</b>nalytics</p>
-    <h2 class="hero-tag">Camera-trap data, segregate, verify and analyze,<br><span style="color:#5ec27a;">on your own machine.</span></h2>
-    <p class="hero-desc">Every feature is built around how teams actually work, on the ground and back in the office. It comes out of a year of conversations and feedback with different organizations running real large scale surveys. Next: more tools to pull deeper ecological insight out of camera-trap data, with AI and a human always in the loop.</p>
+    <h2 class="hero-tag">Camera-trap data, segregate, verify and analyze,<br><span style="color:#5ec27a;">on your own machine</span></h2>
+    <p class="hero-desc">Every feature is built around how teams actually work, on the ground and back in the office. It comes out of a year of conversations and feedback with different organizations running real large scale surveys.<br><b>Next:</b> we are also building our own models, from fine-tuned local species classifiers to ReID, grounded in our own research. More models, features and insights are on the way, as we work toward a true one-stop platform, always with a <b>Human</b> in the loop.</p>
     <div class="hero-actions">
       <a href="#download" class="btn-primary">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
@@ -183,32 +185,32 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
 
 <section class="block" id="why">
   <span class="section-label">Why HabiDATA</span>
-  <h2 class="section-title">Built around how field teams actually work.<br><span class="muted">Not around a data-sharing agreement.</span></h2>
+  <h2 class="section-title">Built around how field teams actually work<br><span class="muted">One tool for any team, no strings on your data</span></h2>
   <div class="why-grid">
     <div class="why-card">
       <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0114.08 0"></path><path d="M8.5 16.03a6 6 0 017 0"></path><path d="M12 20h.01"></path><path d="M2 2l20 20"></path></svg></div>
       <h3>Offline by default</h3>
-      <p>No uploads, no account, no cloud. Every model runs entirely on the machine in front of you.</p>
+      <p>No uploads, no account, no cloud. Every model runs entirely on the machine in front of you. Optimized for speed, a GPU makes it faster, not just possible.</p>
     </div>
     <div class="why-card">
       <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9h6v6H9z"></path><path d="M4 8V6a2 2 0 012-2h2M16 4h2a2 2 0 012 2v2M20 16v2a2 2 0 01-2 2h-2M8 20H6a2 2 0 01-2-2v-2"></path><path d="M1 12h3M20 12h3M12 1v3M12 20v3"></path></svg></div>
-      <h3>Global classifiers integrated</h3>
-      <p>MegaDetector and species classifiers built in, ready to run. Optimized for speed, a GPU makes it faster, not just possible.</p>
+      <h3>Global classifiers, fine-tuned for India</h3>
+      <p>MegaDetector, SpeciesNet and AddaxAI's Central India species classifier built in, ready to run, with our own fine-tuned models on the way.</p>
     </div>
     <div class="why-card">
       <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg></div>
       <h3>Non-linear by design</h3>
-      <p>Bring in your data at whatever stage it's already in: raw images, segregated folders, or old deployment sheets for analysis.</p>
+      <p>Bring in your data at whatever stage it's already in: raw images, manual/model-segregated folders, or old master sheets for analysis.</p>
     </div>
     <div class="why-card">
       <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M7 16l4-8 4 5 5-7"></path></svg></div>
       <h3>Ecology, not just counts</h3>
-      <p>Trap-nights, RAI per 100 trap-nights, diel activity, species overlap and a deployment sheet you can hand to a report.</p>
+      <p>Trap-nights, RAI per 100 trap-nights, diel activity, species overlap and a master sheet you can hand to a report.</p>
     </div>
     <div class="why-card">
       <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8L22 12l-4 4"></path><path d="M2 12h20"></path><path d="M6 16l-4-4 4-4"></path></svg></div>
       <h3>Verify data as a team</h3>
-      <p>Hand a collaborator a copy of the database, get it back, merge it. Verification survives moving between machines.</p>
+      <p>Hand a collaborator a copy of the database, get it back, merge it. Or hand a PI a read-only analysis database. Verification survives moving between machines.</p>
     </div>
     <div class="why-card">
       <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5ec27a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 00-8 8c0 5.4 7 11.5 7.3 11.8a1 1 0 001.4 0C13 21.5 20 15.4 20 10a8 8 0 00-8-8z"></path><path d="M12 7v6M9 10h6"></path></svg></div>
@@ -220,94 +222,96 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
 
 <section class="block" id="workflow">
   <span class="section-label">The workflow</span>
-  <h2 class="section-title">From a folder of photos to a deployment sheet.<br><span class="muted">Four screens, one application.</span></h2>
+  <h2 class="section-title">From a folder of photos to a master sheet<br><span class="muted">Four screens, one application</span></h2>
   
     <div class="wf-row">
       <div class="wf-text">
         <div class="wf-step-row"><span class="wf-step-num">STEP 01</span><span class="wf-step-line"></span></div>
         <h3>Open the survey folder</h3>
         <div class="wf-caption-stack">
-          <p class="wf-slide-text" style="animation:wf-fade2 8s infinite; animation-delay:0s">HabiDATA reads your folder tree as the hierarchy it already is (round, beat, grid, camera) and tells you what is on disk, what has been processed, and what is still unverified, per medium.</p>
-          <p class="wf-slide-text" style="animation:wf-fade2 8s infinite; animation-delay:4s">Export to global standard formats, spin up a collaborative database your whole team edits and merges back later, or hand a PI a read-only analysis database for inference alone.</p>
+          <p class="wf-slide-text active">HabiDATA reads your folder tree as the hierarchy it already is (round, beat, grid, camera) and tells you what is on disk, what has been processed, and what is still unverified, per medium. Or drop in an old master sheet to analyze straight away, no images needed.</p>
+          <p class="wf-slide-text">Export to global standard formats, spin up a collaborative database your whole team edits and merges back later, or hand a PI a read-only analysis database for inference alone.</p>
+          <p class="wf-slide-text">Already organized by species or site? Mass Annotate reads those folder names as labels and boxes the animals automatically, so you can go straight to analysis.</p>
         </div>
-        <div class="wf-tags"><span class="wf-tag">Folder roles</span><span class="wf-tag">Verification progress</span><span class="wf-tag">Per-grid breakdown</span></div>
+        <div class="wf-tags"><span class="wf-tag">Project overview</span><span class="wf-tag">Export options</span><span class="wf-tag">Mass annotate</span></div>
       </div>
       <div class="wf-shot">
         <div class="wf-shot-bar"><span></span><span></span><span></span><span class="wf-shot-label">Home · project overview</span></div>
         <div class="wf-slides">
-          <img class="wf-slide" style="animation:wf-fade2 8s infinite; animation-delay:0s" src="Images/home.png" alt="HabiDATA Home dashboard: administrative hierarchy, image and video counts, verification progress, capture activity and per-grid table" loading="lazy">
-          <img class="wf-slide" style="animation:wf-fade2 8s infinite; animation-delay:4s" src="Images/export.png" alt="HabiDATA Export screen: standard format export, collaborative database and analysis-only database options" loading="lazy">
+          <img class="wf-slide active" src="Images/home.png" alt="HabiDATA Home dashboard: administrative hierarchy, image and video counts, verification progress, capture activity and per-grid table" loading="lazy">
+          <img class="wf-slide" src="Images/export.png" alt="HabiDATA Export screen: standard format export, collaborative database and analysis-only database options" loading="lazy">
+          <img class="wf-slide" src="Images/mass_annotate.png" alt="HabiDATA Mass Annotate dialog: folder roles, species mapping and detector settings for auto-labeling straight from folder structure" loading="lazy">
         </div>
       </div></div>
     <div class="wf-row">
       <div class="wf-shot">
         <div class="wf-shot-bar"><span></span><span></span><span></span><span class="wf-shot-label">Run detection</span></div>
         <div class="wf-slides">
-          <img class="wf-slide" style="animation:wf-fade2 8s infinite; animation-delay:0s" src="Images/run.png" alt="HabiDATA Run detection screen: model and threshold settings beside a category donut and per-species counts" loading="lazy">
-          <img class="wf-slide" style="animation:wf-fade2 8s infinite; animation-delay:4s" src="Images/segregate.png" alt="HabiDATA segregate screen sorting detections into folders by category" loading="lazy">
+          <img class="wf-slide active" src="Images/run.png" alt="HabiDATA Run detection screen: model and threshold settings beside a category donut and per-species counts" loading="lazy">
+          <img class="wf-slide" src="Images/segregate.png" alt="HabiDATA segregate screen sorting detections into folders by category" loading="lazy">
         </div>
       </div>
       <div class="wf-text">
         <div class="wf-step-row"><span class="wf-step-num">STEP 02</span><span class="wf-step-line"></span></div>
         <h3>Run detection and species ID</h3>
         <div class="wf-caption-stack">
-          <p class="wf-slide-text" style="animation:wf-fade2 8s infinite; animation-delay:0s">MegaDetector animals, human, vehicles and blanks; an optional classifier names the species on each animal crop. Progress streams live and a paused run keeps its place.</p>
-          <p class="wf-slide-text" style="animation:wf-fade2 8s infinite; animation-delay:4s">Your folder structure stays exactly as it is on disk, copy or move the segregated images either way. Any edit to a file's location is tracked, so it never breaks the analysis or the deployment sheet downstream.</p>
+          <p class="wf-slide-text active">Runs on images and videos alike, a detector with a species classifier layered on top. Progress streams live, and you can pause anytime and resume exactly where you left off.</p>
+          <p class="wf-slide-text">Your folder structure stays exactly as it is on disk, copy or move the segregated images either way. Any edit to a file's location is tracked, so it never breaks the analysis or the master sheet downstream.</p>
         </div>
-        <div class="wf-tags"><span class="wf-tag">MegaDetector v6</span><span class="wf-tag">AddaxAI · SpeciesNet</span><span class="wf-tag">Pause and resume</span></div>
+        <div class="wf-tags"><span class="wf-tag">Run detection</span><span class="wf-tag">Segregate images</span></div>
       </div></div>
     <div class="wf-row">
       <div class="wf-text">
         <div class="wf-step-row"><span class="wf-step-num">STEP 03</span><span class="wf-step-line"></span></div>
         <h3>Verify and tag what matters</h3>
         <div class="wf-caption-stack">
-          <p class="wf-slide-text" style="animation:wf-fade3 12s infinite; animation-delay:0s">A dense review grid with category dots and verification flags. Number keys assign species, batch actions fix a whole selection, and nothing is written until you press Save.</p>
-          <p class="wf-slide-text" style="animation:wf-fade3 12s infinite; animation-delay:4s">Missed an animal the model didn't box? Add it straight from the species list, no drawing a new region by hand.</p>
-          <p class="wf-slide-text" style="animation:wf-fade3 12s infinite; animation-delay:8s">Edit one frame of a clip and Smart Propagate carries the change across it, tracking the same instance through every frame.</p>
+          <p class="wf-slide-text active">A grid view to select and verify or reassign multiple detections at once, with hotkeys to make it fast, and filters for category, search and even location within the data. Nothing is written until you press Save.</p>
+          <p class="wf-slide-text">Missed an animal the model didn't box? Add it straight from the species list, no drawing a new region by hand.</p>
+          <p class="wf-slide-text">Edit one frame of a clip and Smart Propagate carries the change across it, tracking the same instance through every frame.</p>
         </div>
-        <div class="wf-tags"><span class="wf-tag">Species hotkeys</span><span class="wf-tag">Smart verify</span><span class="wf-tag">Box editing</span></div>
+        <div class="wf-tags"><span class="wf-tag">Species hotkeys</span><span class="wf-tag">Add a box</span><span class="wf-tag">Smart Propagate</span></div>
       </div>
       <div class="wf-shot">
         <div class="wf-shot-bar"><span></span><span></span><span></span><span class="wf-shot-label">Edit & tag</span></div>
         <div class="wf-slides">
-          <img class="wf-slide" style="animation:wf-fade3 12s infinite; animation-delay:0s" src="Images/edit.png" alt="HabiDATA review grid with camera-trap thumbnails, species hotkey bar and batch verify controls" loading="lazy">
-          <img class="wf-slide" style="animation:wf-fade3 12s infinite; animation-delay:4s" src="Images/edit_box.png" alt="HabiDATA edit screen adding a box from the species list" loading="lazy">
-          <img class="wf-slide" style="animation:wf-fade3 12s infinite; animation-delay:8s" src="Images/edit_video.png" alt="HabiDATA video edit screen propagating a box edit across frames" loading="lazy">
+          <img class="wf-slide active" src="Images/edit.png" alt="HabiDATA review grid with camera-trap thumbnails, species hotkey bar and batch verify controls" loading="lazy">
+          <img class="wf-slide" src="Images/edit_box.png" alt="HabiDATA edit screen adding a box from the species list" loading="lazy">
+          <img class="wf-slide" src="Images/edit_video.png" alt="HabiDATA video edit screen propagating a box edit across frames" loading="lazy">
         </div>
       </div></div>
     <div class="wf-row">
       <div class="wf-shot">
         <div class="wf-shot-bar"><span></span><span></span><span></span><span class="wf-shot-label">Analysis · RAI</span></div>
         <div class="wf-slides">
-          <img class="wf-slide" style="animation-delay:0s" src="Images/timeline.png" alt="HabiDATA Timeline screen showing capture activity by hour and by day per species" loading="lazy">
-          <img class="wf-slide" style="animation-delay:4s" src="Images/overlap.png" alt="HabiDATA Overlap screen showing diel activity overlap between species pairs" loading="lazy">
-          <img class="wf-slide" style="animation-delay:8s" src="Images/rai.png" alt="HabiDATA Analysis screen showing relative abundance index bars per species with trap-night effort notes" loading="lazy">
-          <img class="wf-slide" style="animation-delay:12s" src="Images/diversity.png" alt="HabiDATA Diversity screen showing species diversity indices per grid" loading="lazy">
-          <img class="wf-slide" style="animation-delay:16s" src="Images/deployment_sheet.png" alt="HabiDATA deployment sheet ready for export" loading="lazy">
+          <img class="wf-slide active" src="Images/timeline.png" alt="HabiDATA Timeline screen showing capture activity by hour and by day per species" loading="lazy">
+          <img class="wf-slide" src="Images/overlap.png" alt="HabiDATA Overlap screen showing diel activity overlap between species pairs" loading="lazy">
+          <img class="wf-slide" src="Images/rai.png" alt="HabiDATA Analysis screen showing relative abundance index bars per species with trap-night effort notes" loading="lazy">
+          <img class="wf-slide" src="Images/diversity.png" alt="HabiDATA Diversity screen showing species diversity indices per grid" loading="lazy">
+          <img class="wf-slide" src="Images/deployment_sheet.png" alt="HabiDATA master sheet ready for export" loading="lazy">
         </div>
       </div>
       <div class="wf-text">
         <div class="wf-step-row"><span class="wf-step-num">STEP 04</span><span class="wf-step-line"></span></div>
         <h3>Get numbers you can publish</h3>
         <div class="wf-caption-stack">
-          <p class="wf-slide-text" style="animation-delay:0s">Capture activity by hour and by day, so you can see when each species is actually active.</p>
-          <p class="wf-slide-text" style="animation-delay:4s">Diel activity overlap between species pairs, with the Δ estimator separating a real pattern from small-sample noise.</p>
-          <p class="wf-slide-text" style="animation-delay:8s">Relative abundance per 100 trap-nights, at any level of the hierarchy, with the independence interval you choose.</p>
-          <p class="wf-slide-text" style="animation-delay:12s">Species diversity indices per grid or round, so sites are comparable on more than a raw species count.</p>
-          <p class="wf-slide-text" style="animation-delay:16s">A deployment sheet ready to hand to a report, effort and all, with an honest note when a camera's clock made an estimate unsafe.</p>
+          <p class="wf-slide-text active">Capture activity by hour and by day, so you can see when each species is actually active.</p>
+          <p class="wf-slide-text">Diel activity overlap between species pairs, with the Δ estimator separating a real pattern from small-sample noise.</p>
+          <p class="wf-slide-text">Relative abundance per 100 trap-nights, at any level of the hierarchy, with the independence interval you choose.</p>
+          <p class="wf-slide-text">Species diversity indices per grid or round, so sites are comparable on more than a raw species count.</p>
+          <p class="wf-slide-text">A simple master sheet for your data, ready to make reports from. Import coordinates and values are populated automatically to each camera grid.</p>
         </div>
-        <div class="wf-tags"><span class="wf-tag">RAI & trap-nights</span><span class="wf-tag">Activity overlap</span><span class="wf-tag">Excel export</span></div>
+        <div class="wf-tags"><span class="wf-tag">Capture timeline</span><span class="wf-tag">Activity overlap</span><span class="wf-tag">RAI & trap-nights</span><span class="wf-tag">Diversity indices</span><span class="wf-tag">Master sheet</span></div>
       </div></div>
 </section>
 
 <section class="block" id="performance">
   <span class="section-label">Performance</span>
-  <h2 class="section-title" style="margin-bottom:16px;">It runs on the laptop you already have.<br><span class="muted">A GPU makes it quicker, not possible.</span></h2>
+  <h2 class="section-title" style="margin-bottom:16px;">It runs on the laptop you already have<br><span class="muted">A GPU makes it quicker, not just possible</span></h2>
   <!-- <p style="font-size:15px; color:#a3b8a3; max-width:620px; margin-bottom:44px;">Measured on 10,000 images with MegaDetector v6.</p> -->
   <div class="bench-grid">
     <div class="bench-card">
       <div class="bench-name">Intel Core i7 · CPU only</div>
-      <div class="bench-spec">14C/20T · 32GB RAM</div>
+      <div class="bench-spec">32GB RAM</div>
       <div class="bench-time-row"><span>10,000 images</span><span class="bench-time" style="color:#e8f2e8">1h 7m</span></div>
       <div class="bench-bar"><div class="bench-bar-fill" style="width:34%"></div></div>
       <div class="bench-r"><span>Throughput</span><span>2.5 img/sec</span></div>
@@ -394,7 +398,7 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
 
 <section class="block" id="team">
   <span class="section-label">Who builds it</span>
-  <h2 class="section-title" style="margin-bottom:44px;">A small team, built with the people using it.</h2>
+  <h2 class="section-title" style="margin-bottom:44px;">A small team, built with the people using it</h2>
   <div class="team-grid1">
     <div class="team-card">
       <div class="name-row">
@@ -410,16 +414,17 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
         <a class="team-link" href="https://in.linkedin.com/in/santhosh-pavagada-a63348a" target="_blank" rel="noopener" aria-label="Santhosh Pavagada profile link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"></path></svg></a>
       </div>
       <div class="role">LEAD T4C @ The Habitat Trust</div>
-      <p>Keeps the tool honest against real survey practice: effort, independence intervals and what a deployment sheet has to carry.</p>
+      <p>Harnesses expertise in both conservation and technology to develop meaningful tools for the conservation community. Believes in democratising technology and making it more accessible to those who need it. Helps keep the tools grounded in real-world survey practice.</p>
     </div>
   </div>
   <div class="thanks-card">
     <div class="lbl">Tested by</div>
-    <p>Early builds went out to six conservation and research organizations across India long before this launch. Their teams' hands on feedback, through every version, is a big part of why the tool works the way it does today.</p>
+    <p>Early builds went out to six conservation and research organizations across India long before this launch. Their teams' hands-on feedback, through every version, is a big part of why the tool works the way it does today, shaped by more than 1.6 million images processed and verified.</p>
     <div class="thanks-row">
       <span class="wf-tag">6 organizations</span>
       <span class="wf-tag">Across India</span>
       <span class="wf-tag">Feedback on every version</span>
+      <span class="wf-tag">1.6M+ images processed</span>
     </div>
   </div>
   <div class="team-grid2">
@@ -429,7 +434,7 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
       <li>Google SpeciesNet classifier</li>
       <li>The Δ overlap estimator of Ridout &amp; Linkie (2009)</li>
     </ul></div>
-    <div class="info-card"><div class="lbl">Talk to us</div><p>Setup help, or a survey you think will break it: <a href="mailto:sharatag.work@gmail.com">sharatag.work@gmail.com</a></p></div>
+    <div class="info-card"><div class="lbl">Talk to us</div><p>Setup help, or a survey you think will break it: <a href="mailto:sharatag.work@gmail.com">sharatag.work@gmail.com</a> or <a href="mailto:tech@thehabitatstrust.org">tech@thehabitatstrust.org</a></p></div>
   </div>
 </section>
 
@@ -440,6 +445,7 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
     <a href="#performance">Performance</a>
     <a href="#download">Download</a>
     <a href="mailto:sharatag.work@gmail.com">sharatag.work@gmail.com</a>
+    <a href="mailto:tech@thehabitatstrust.org">tech@thehabitatstrust.org</a>
   </div>
 </footer>
 
@@ -465,6 +471,79 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
+</script>
+<script>
+  (function() {
+    document.querySelectorAll('.wf-row').forEach(function(row) {
+      var slides = row.querySelectorAll('.wf-slide');
+      var texts = row.querySelectorAll('.wf-slide-text');
+      var tags = row.querySelectorAll('.wf-tags .wf-tag');
+      var n = slides.length;
+      var t = tags.length;
+      if (n < 2) return;
+
+      var captionStack = row.querySelector('.wf-caption-stack');
+      function fitCaptionHeight() {
+        if (!captionStack) return;
+        var maxH = 0;
+        texts.forEach(function(el) { maxH = Math.max(maxH, el.offsetHeight); });
+        captionStack.style.minHeight = maxH + 'px';
+      }
+      fitCaptionHeight();
+      window.addEventListener('resize', fitCaptionHeight);
+
+      // Map each tag to the slide it should jump to, spread evenly across the row's slides.
+      var tagToSlide = tags.length ? Array.from(tags).map(function(_, ti) {
+        return t > 1 ? Math.round(ti * (n - 1) / (t - 1)) : 0;
+      }) : [];
+      // Map each slide to the tag that should be highlighted while it's showing.
+      var slideToTag = t ? Array.from(slides).map(function(_, si) {
+        return Math.min(t - 1, Math.floor(si * t / n));
+      }) : [];
+
+      var current = 0;
+      var paused = false;
+      var pausedTag = null;
+      var resumeTimer = null;
+      var PAUSE_TIMEOUT = 10000;
+
+      function show(i) {
+        current = i;
+        slides.forEach(function(el, idx) { el.classList.toggle('active', idx === i); });
+        texts.forEach(function(el, idx) { el.classList.toggle('active', idx === i); });
+        var activeTag = paused && pausedTag !== null ? pausedTag : (slideToTag.length ? slideToTag[i] : -1);
+        tags.forEach(function(el, idx) { el.classList.toggle('active', idx === activeTag); });
+      }
+
+      function resume() {
+        clearTimeout(resumeTimer);
+        resumeTimer = null;
+        paused = false;
+        pausedTag = null;
+        show(current);
+      }
+
+      tags.forEach(function(tagEl, ti) {
+        tagEl.addEventListener('click', function() {
+          if (paused && pausedTag === ti) {
+            resume();
+            return;
+          }
+          paused = true;
+          pausedTag = ti;
+          show(tagToSlide[ti]);
+          clearTimeout(resumeTimer);
+          resumeTimer = setTimeout(resume, PAUSE_TIMEOUT);
+        });
+      });
+
+      show(0);
+      setInterval(function() {
+        if (paused) return;
+        show((current + 1) % n);
+      }, 4000);
+    });
+  })();
 </script>
 </body>
 </html>
