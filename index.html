@@ -28,9 +28,11 @@ nav.scrolled { min-height:60px; padding-top:8px; padding-bottom:8px; background:
 .nav-logo span { font-size:19px; font-weight:800; letter-spacing:0.4px; color:#e8f2e8; transition:font-size 0.25s ease; }
 .nav-partner { display:flex; align-items:center; padding-left:20px; border-left:1px solid #222e22; }
 .nav-partner img { height:40px; width:auto; object-fit:contain; opacity:0.85; transition:height 0.25s ease; }
+.nav-right { display:flex; align-items:center; gap:clamp(14px,2vw,30px); }
 .nav-links { display:flex; align-items:center; gap:clamp(14px,2vw,30px); flex-wrap:wrap; }
 .nav-links a { font-size:13.5px; font-weight:600; color:#a3b8a3; letter-spacing:0.2px; white-space:nowrap; }
 .nav-cta { display:inline-flex; align-items:center; gap:7px; padding:9px 20px; background:#5ec27a !important; color:#0a0d0a !important; border-radius:8px; font-size:13px; font-weight:800; transition:padding 0.25s ease; }
+.nav-toggle { display:none; align-items:center; justify-content:center; width:38px; height:38px; background:transparent; border:1px solid #2a382a; border-radius:8px; color:#e8f2e8; cursor:pointer; flex-shrink:0; }
 nav.scrolled .nav-logo img { width:26px; height:26px; }
 nav.scrolled .nav-logo span { font-size:15.5px; }
 nav.scrolled .nav-partner img { height:28px; }
@@ -140,7 +142,12 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
 .footer-brand span { font-size:12.5px; color:#6d826d; }
 .footer-links { display:flex; gap:22px; flex-wrap:wrap; }
 .footer-links a { font-size:12.5px; color:#6d826d; }
-@media (max-width:760px){ .nav-links a:not(.nav-cta){ display:none; } }
+@media (max-width:760px){
+  .nav-toggle { display:flex; }
+  .nav-links { position:absolute; top:100%; left:0; right:0; flex-direction:column; align-items:stretch; gap:0; background:rgba(10,13,10,0.97); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid #1c261c; max-height:0; overflow:hidden; transition:max-height 0.25s ease; }
+  .nav-links.open { max-height:280px; }
+  .nav-links a { padding:14px clamp(20px,4vw,40px); border-top:1px solid #1c261c; white-space:normal; }
+}
 </style>
 </head>
 <body>
@@ -152,12 +159,17 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
     </a>
     <a href="https://www.thehabitatstrust.org/" target="_blank" rel="noopener" class="nav-partner"><img src="Images/THT.png" alt="The Habitats Trust"></a>
   </div>
-  <div class="nav-links">
-    <a href="#why">Why HabiDATA</a>
-    <a href="#workflow">Workflow</a>
-    <a href="#performance">Performance</a>
-    <a href="#team">Who builds it</a>
+  <div class="nav-right">
+    <div class="nav-links" id="nav-links">
+      <a href="#why">Why HabiDATA</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#performance">Performance</a>
+      <a href="#team">Who builds it</a>
+    </div>
     <a href="#download" class="nav-cta">Get the app</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-links">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
   </div>
 </nav>
 
@@ -458,6 +470,27 @@ footer { margin-top:110px; padding:32px 0 48px; border-top:1px solid #222e22; di
     }
     document.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
+  })();
+  (function() {
+    var toggle = document.querySelector('.nav-toggle');
+    var navLinks = document.getElementById('nav-links');
+    if (!toggle || !navLinks) return;
+    function closeMenu() {
+      navLinks.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+    toggle.addEventListener('click', function() {
+      var isOpen = navLinks.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    navLinks.addEventListener('click', function(e) {
+      if (e.target.closest('a')) closeMenu();
+    });
+    document.addEventListener('click', function(e) {
+      if (!navLinks.classList.contains('open')) return;
+      if (e.target.closest('#nav-links') || e.target.closest('.nav-toggle')) return;
+      closeMenu();
+    });
   })();
   document.addEventListener('click', function(e) {
     var link = e.target.closest('a[href^="#"]');
